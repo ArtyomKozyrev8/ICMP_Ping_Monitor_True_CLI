@@ -6,273 +6,229 @@
 # If you struggle any difficulties to setup the program for yourself, feel free to apply to kozirev8@gmail.com
 # If any other question, feel free to let me know, I'll do my best to help.
 
-import subprocess
-import time
-import ipaddress
+
+import threading
 import sys
+import time
+import os
+import smtplib
+import enum
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
-class IplistFileOp:
-    '''This class was defined to store all operations which could be made with IPLIST.txt
-    IPLIST.txt contains list of ip addresses which have ever been used in monitoring'''
-    
-    __all__ = ["write_ip_to_file", "read_ip_from_file", "remove_ip_from_file", "rewrite_file", "show_ip_in_file"]
-    
-    def write_ip_to_file(ip, file="IPLIST.txt"):
-        ''' Types: ip is a string | file is a .txt file
-        Output Types: void
-        The method write ip to file to use it in further program Starts
-        If user would like to read list of ip which were monitored later'''      
-        with open(file, mode='a') as f:
-            f.write(f"{ip}\n")
-            
-    def read_ip_from_file(file="IPLIST.txt"):
-        ''' Types: file is a .txt file
-        Output Types: tuple Boolean,Set
-        The function is used to read Ip addresses from file and return it as a list'''
-        ipList = []
+class MyMailActivity:
+    '''This class is used to make mail activity for the program'''
+    def send_negative_mail(ipAddress, email_sender, email_receiver):
+        '''The method sends negative mail if ip is not reachable'''
+        ipAddress = str(ipAddress)
+        # Attention! write your own mail subject, do not delete words inside brackets str(MyTime(MyTimeMode.full))
+        subject = f"MTT Oy error notification L2 {str(MyTime(MyTimeMode.full))}"
+        msg = MIMEMultipart() 
+        msg['From'] = email_sender
+        msg['To'] = ", ".join(email_receiver)
+        msg['Subject'] = subject
+        # Attention! write your own mail message, do not delete words inside brackets ipAddress and str(MyTime(MyTimeMode.full))
+        body = f"""Dear Partner,\n\nWe observe that address {ipAddress} is not reachable within last 30 seconds.
+Now {str(MyTime(MyTimeMode.full))}.
+        
+We ask you to investigate the issue and undertake all necessary steps to solve the problem.
+        
+Best Regards,\nMTT Oy Network Monitor Robot"""
+
+        msg.attach(MIMEText(body, 'plain'))
+        text = msg.as_string() 
         try:
-            with open(file, mode = "r") as f:
-                for ip in f:
-                    ipList.append(ip.strip())
-        except FileNotFoundError:
-            print("The file IPLIST.txt is not reachable or corrupted.")
-            print("Try to delete IPLIST.txt if it exists.")
-            print("Import failed.\n")
-            return (False, set(ipList))
-        else:
-            return (True, set(ipList))
+            connection = smtplib.SMTP('smtp.gmail.com', 587) # Attention! This should be settings of you smtp server
+            connection.starttls()  
+            connection.login(email_sender, 'YourPassword')
+            # Attention! Put password of your mailbox to send mails about alarms from
+            connection.sendmail(email_sender, email_receiver, text)
+            connection.quit()
+        except:
+            with open(file="ErrorLog.txt", mode="a") as f:
+                f.write(str(MyTime(MyTimeMode.full)))
+                f.write("Connection to SMTP server failed.")
+                f.write(errormessage1)            
+            
+    def send_positive_mail(ipAddress, email_sender, email_receiver):
+        '''The method sends positive mail if ip is reachable again'''
+        ipAddress = str(ipAddress)
+        # Attention! write your own mail subject, do not delete words inside brackets str(MyTime(MyTimeMode.full))
+        subject = f"MTT Oy recovery notification L2 {str(MyTime(MyTimeMode.full))}"
+        msg = MIMEMultipart() 
+        msg['From'] = email_sender
+        msg['To'] = ", ".join(email_receiver)
+        msg['Subject'] = subject
+        # Attention! write your own message, do not delete words inside brackets ipAddress and str(MyTime(MyTimeMode.full))
+        body = f"""Dear Partner,\n\nWe observe that address {ipAddress} has recovered and is stable within last 60 seconds.
+Now {str(MyTime(MyTimeMode.full))}.
         
-    def remove_ip_from_file(ip, iplist):
-        ''' Types: ip is a string | iplist is a list
-        Output Types: void
-        The function is used to read Ip addresses from file and return it as a list'''
-        if ip in iplist:
-            iplist.remove(ip)
-            print(f"The {ip} was removed from ip list file IPLIST.txt")
-        else: print(f"The {ip} is not in ip list file IPLIST.txt")
-            
-    def rewrite_file(iplist, file="IPLIST.txt"):
-        ''' Types: iplist is a list | file is a .txt file 
-        Output Types: void
-        The function is used to read ip addresses from file and return it as a list'''
-        with open(file, mode = 'w') as f:
-            for ip in set(iplist):
-                f.write(f"{ip}\n")
-            
-    def show_ip_in_file(iplist):
-        '''Types: iplist is List
-        The function used to show ip addressed, which are in unique file IPLIST.txt'''
-        print("The following ips are in file IPLIST.txt:\n")
-        for ip in set(iplist):
-              print(ip)
-        print()
+We ask you to investigate and provide us RFO.
+        
+Best Regards,\nMTT Oy Network Monitor Robot"""
 
-class CLI_MENU:
-    '''This class contains methods for CLI menu, which is used in the program'''
-    
-    __all__ = ["is_ip_already_in_monitoring", "stop_popen", "add_ip_to_monitoring",
-               "import_ip_from_file", "is_ip_address", "analyze_command", "exit_program",
-              "show_ip_in_monitoring", "give_help_menu", "hello_banner"]
+        msg.attach(MIMEText(body, 'plain'))
+        text = msg.as_string()  
+        try:
+            connection = smtplib.SMTP('smtp.gmail.com', 587) # Attention! This should be settings of you smtp server
+            connection.starttls()  
+            connection.login(email_sender, 'YourPassword') 
+            # Attention! Put password of your mailbox to send mails about alarms from
+            connection.sendmail(email_sender, email_receiver, text)
+            connection.quit()
+        except:
+            with open(file="ErrorLog.txt", mode="a") as f:
+                f.write(str(MyTime(MyTimeMode.full)))
+                f.write("Connection to SMTP server failed.")
+                f.write(errormessage1)
 
-    def is_ip_already_in_monitoring(ip, popenlist):
-        ''' Input Types: ip is a string |  popenlist is a dictionary |
-        Output Types: Boolean
-        The method is used to check if ip is already in monitoring,
-        to prevent creation of duplicated subpocesses.
-        popenlist is  dictionary where key is ip address and 
-        value is subprocess.Popen'''
+class MyTimeMode(enum.Enum):
+    '''This class is createc to be used in instances of MyTime class to determine options of __str__ format for that clls'''
+    full = "Date: {2}.{1}.{0} Time UTC+3 {3}:{4}:{5}"
+    middle = "date{2}_{1}_{0}_timeUTC3_{3}"
+    short = "date{2}_{1}_{0}"
 
-        if ip in popenlist.keys():
-            print(f"{ip} address is already in monitoring.\n")
+class MyTime:
+    '''This class is used to display datetiem in the program'''
+    def __init__(self,mode=MyTimeMode.middle):
+        ''' Is used to create class instance'''
+        self.timeNow = time.localtime()
+        self.mode = mode
+
+    def __str__(self):
+        '''Is used to create string representation of the MyTime Class to be used in print, etc'''
+        currentTime = map(lambda x: "0"+str(x) if x<10 else str(x),[self.timeNow.tm_mday,
+                                                                  self.timeNow.tm_mon,
+                                                                  self.timeNow.tm_year,
+                                                                  self.timeNow.tm_hour,
+                                                                  self.timeNow.tm_min,
+                                                                  self.timeNow.tm_sec])
+
+        return self.mode.value.format(*currentTime) # value is an attribute of enum class
+    def compare_dates(self, date_compare):
+        '''The class is used to compare instance of MyTime Class'''
+        if self.timeNow.tm_year > date_compare.timeNow.tm_year:
             return True
-        else:
+        elif self.timeNow.tm_year < date_compare.timeNow.tm_year:
             return False
-    
-    def stop_popen(ip, popenlist):
-        ''' Input Types: ip is a string |  popenlist is a dictionary |
-        Output Types: void
-        The method us used to remove ip from monitoring, if there is no such ip
-        we get error message.
-        popenlist is  dictionary where key is ip address and 
-        value is subprocess.Popen '''
-    
-        if ip in popenlist.keys():
-            popenlist[ip].kill()
-            del popenlist[ip]
-            print(f"{ip} is removed from monitoring\n")
         else:
-            print(f"The mentioned ip {ip} address is not in monitoring.\n")
-            print("Use show command to see all ip which are monitored.")
-            print("To get help print help then press Enter\n")
-
-    def add_ip_to_monitoring(ip, popenlist):
-        ''' Types: ip is a string |  popenlist is a dictionary |
-        Output Types: void
-        The method us used to add ip in monitoring.
-        ip is checked to be correct ip before adding in monitoring,
-        see is_ip_already_in_monitoring method
-        popenlist is  dictionary where key is ip address and 
-        value will be subprocess.Popen'''
-        if CLI_MENU.is_ip_address(str(ip)):
-            if not CLI_MENU.is_ip_already_in_monitoring(ip,popenlist): 
-                popenlist[ip]=subprocess.Popen(["python", "pingsubprocess.py", ip], stdout=subprocess.DEVNULL)
-                print(f"{ip} was added to monitoring\n")
-                IplistFileOp.write_ip_to_file(ip)
-                 
-    def import_ip_from_file():
-        ''' Types: none
-        Outpust Types: ipList - string or set
-        This method is used in CLI menu to upload to program list of ip addresses, which have ever been
-        used in the program before, the method gives opportunity to delete some ips from file IPLIST.txt
-        and only then import the rest ips to monitoring'''
-        
-        readFromFileResult = IplistFileOp.read_ip_from_file()
-        continueImport = readFromFileResult[0]
-        ipList = readFromFileResult[1]
-        if not continueImport:
-            ipList = "FileError"
-            return ipList
-        while(continueImport):
-            IplistFileOp.show_ip_in_file(ipList)
-            ip = input("Print ip you would like to remove, otherwise print Enter:\n")
-            if ip == "":
-                continueImport = False
-                break
-            else:                
-                IplistFileOp.remove_ip_from_file(ip,ipList)
-                IplistFileOp.show_ip_in_file(ipList)
-            while(True):
-                removeMoreIP = input("Print yes and press Enter to remove more ip, otherwise press Enter:\n")
-                if removeMoreIP.upper() == "YES":
-                    continueImport = True
-                    break
-                elif removeMoreIP == "":
-                    continueImport = False
-                    IplistFileOp.rewrite_file(ipList)
-                    break
+            if self.timeNow.tm_mon > date_compare.timeNow.tm_mon:
+                return True
+            elif self.timeNow.tm_mon < date_compare.timeNow.tm_mon:
+                return False
+            else:
+                if self.timeNow.tm_mday > date_compare.timeNow.tm_mday:
+                    return True
+                elif self.timeNow.tm_mday < date_compare.timeNow.tm_mday:
+                    return False
                 else:
-                    print("Incorrect input was made, please try again.\n")
-        return set(ipList)                               
-              
-    def is_ip_address(ip):
-        ''' Types: ip is a string
-        Output Types: Boolean
-        This function is used to understand if the second part of CLI command is ip
-        address. It returns True or False. The function is used to check add |x.x.x.x 
-        command|, to be exact metod check the second part of the command x.x.x.x'''
-    
-        try:
-            ipaddress.IPv4Address(address = str(ip))
-        except  ipaddress.AddressValueError:
-            print(f"IP {ip} is an incorrect address. It can't be added to monitoring.\n")
-            return False
-        else:
-            return True
+                    if self.timeNow.tm_hour > date_compare.timeNow.tm_hour:
+                        return True
+                    else:
+                        return False
+                        
+                        
 
-    def analyze_command(command):
-        ''' Types: command is a string from input method
-        Output Types: list
-        This function is used to analyze CLI command, it removes spaces from command,
-        if nothing was printed, the method gives the command incorrect value none to process it
-        in main method and cause next error message. CLI Command can't have more then
-        two words, otherwise it is considered as incorrect  and the method gives command
-        an incorrect value none to cause error in main method''' 
-    
-        if command == "":
-            command = "FreeSpace"
-        command = command.split(" ")
-        copyCommand = command.copy()
-        for element in command:
-            if element == "":
-                copyCommand.remove(element)
-        command = copyCommand
-        if len(command) > 2 or len(command)==0:
-            command = ["none"]
-        return command
-
-    def exit_program(popenlist):
-        '''Types: popenlist is a dictionary |
-        This method is used to exit from the program, it takes list of ip in monitoring,
-        read subprocesses which are active now, if the processess are not stopped,
-        the program will not be terminated correctly'''
-    
-        if len(popenlist):
-            for activepopen in popenlist.values():
-                activepopen.kill()
-        print("The program will be terminated in 5 seconds.\n")
-        time.sleep(4)
-        print("Bye...\n")
-        time.sleep(1)
-        sys.exit()
-    
-    def show_ip_in_monitoring(popenlist):
-        '''Types: popenlist is a dictionary |
-        This method is used to show what ip are monitored now'''
-        if not len(popenlist)==0:
-            for ip in popenlist.keys():
-                print(f"{ip} is monitored now.")
+class MyPing():
+    def ping(ip, pinginterval=3):
+        ''' Is used to do one ping and retrun reults'''
+        pingresult = os.system(f"ping -n 1 {ip}")
+        if pingresult == 0:
+            time.sleep(pinginterval)
+            pingresult = (1,0) # successfull attempt
+            return pingresult
+        elif pingresult == 1:
+            pingresult = (0,1) # failed attempt
+            return pingresult
         else:
-            print("There is no ip in monitoring now.\n")
-    
-    def give_help_menu():
-        '''This method is used to show CLI commands which are used in the program'''
-        print()
-        print("The following list of commands is available in this program version:\n")
-        print("add:    Print add and press Enter to add ip to monitoring.")
-        print("        Example: add 1.1.1.1 \n")
-        print("del:    Print del and press Enter to remove ip from monitoring.")
-        print("        Example: del 1.1.1.1 \n")
-        print("show:   Print show and press Enter to see what list of ip is monitored.\n")
-        print("import: Print read and press Enter to read list of ip from IPLIST.txt file.\n")
-        print("exit:   Print exit and press Enter to quit the program.\n")
-        print("help:   Print help and press Enter to get help menu.\n")
-        print("Just press Enter to get some free space in console screen.\n")
-        
-    def hello_banner():
-        '''This method just print hello banner'''
-        print("**********************************************************************")
-        print("*                                                                    *")
-        print("*         Hello and Welcome to ICMP PING MONITOR TRUE CLI            *")
-        print("*                                                                    *")
-        print("**********************************************************************")
-        print()
-        print("   Type your command, if you need help - print help and press Enter   ")
-        print()
-    
-def main():
-    popenList = {}
-    CLI_MENU.hello_banner()
-    while True:
-        command = input("CLI>: ")
-        command = CLI_MENU.analyze_command(command)
-        if command[0] == "add":
-            if len(command) > 1:
-                if CLI_MENU.is_ip_address(command[1]):
-                    CLI_MENU.add_ip_to_monitoring(ip=command[1],popenlist=popenList)
-            else:
-                print("You should put ip address after word add.")
-                print("Print help and press Enter for more information.\n")
-        elif command[0] == "del":
-            if len(command) > 1:
-                CLI_MENU.stop_popen(ip=command[1], popenlist=popenList)
-            else:
-                print("You should put ip address after word del.")
-                print("Print help and press Enter for more information.\n")
-        elif command[0] == "import" and len(command) < 2:
-            ipexportlist = CLI_MENU.import_ip_from_file()
-            if len(ipexportlist) > 0 and (ipexportlist != "FileError"):
-                for ip in ipexportlist:
-                    if CLI_MENU.is_ip_address(ip):
-                        CLI_MENU.add_ip_to_monitoring(ip,popenList)
-                    else: print(f"{ip} is not a correct ip, it will not be added to monitoring.")
-            elif ipexportlist == "FileError":
+            raise PingResultError
+    def write_ping_result_to_file(pingresult, ip):
+        '''Is used to wirte ping reults to file, return path to the file'''
+        currentDirectory = os.getcwd()
+        folderToSavePingResultsUpper = ip
+        folderToSavePingResultsLower = ip+str(MyTime(MyTimeMode.short))
+        folderToSavePingResults = os.path.join(currentDirectory,folderToSavePingResultsUpper, folderToSavePingResultsLower)
+        if not os.path.exists(folderToSavePingResults): # if the path do not exist then 
+            os.makedirs(folderToSavePingResults) # create it now!         
+        with open(os.path.join(folderToSavePingResults,
+                               f"ping_{str(MyTime(MyTimeMode.middle))}_{ip}.txt"),mode="a") as f:
+            if pingresult == (1,0):
+                f.write(f"The remote destination {ip} is reachable, everyting is OKAY.{str(MyTime(MyTimeMode.full))} \n")
+            elif pingresult == (0,1):
+                f.write(f"Ping {ip} failed! {str(MyTime(MyTimeMode.full))} \n")
+            elif pingresult == None:
                 pass
-            else: print("File IPLIST.txt contains no IPs, nothing will be added to monitoring.")        
-        elif command[0] == "show": CLI_MENU.show_ip_in_monitoring(popenlist=popenList)
-        elif command[0] == "help": CLI_MENU.give_help_menu()
-        elif command[0] == "exit": CLI_MENU.exit_program(popenlist=popenList)
-        elif command[0] == "FreeSpace": print()
-        else: print("Incorrect command, Please try again.\n")
+            else:
+                raise PingResultError
+            FilePath = os.path.join(folderToSavePingResults,f"ping_{str(MyTime(MyTimeMode.middle))}_{ip}.txt")
+            return FilePath
+                
+    def write_ping_stats_to_file(ip, positivePingsThisHourCounter, negativePingsThisHourCounter, previousFilePath):
+        '''Writes percent of successfull attempts to file which was used to write ping reuslts in wuthin previous hour'''
+        with open(previousFilePath, mode="a") as f:
+            k=100*positivePingsThisHourCounter/(positivePingsThisHourCounter+negativePingsThisHourCounter)
+            f.write("\n")
+            f.write(f"{ip}__positivePingAttempts_Number_is__{positivePingsThisHourCounter}\n")
+            f.write(f"{ip}__negativePingAttempts_Number_is__{negativePingsThisHourCounter}\n")
+            f.write(f"{ip}__Percent of_positivePingAttempts__is__{k}\n")
+            f.write("\n")
+                    
+def main(ip):
+    pingFailedLetterWasSent = False
+    positivePingsThisHourCounterC = 0
+    negativePingsThisHourCounterC = 0
+    positivePingsInRow = 0
+    negativePingsInRow = 0
+    lastAttemptTime = MyTime()
+    previousFilePath = MyPing.write_ping_result_to_file(ip=ip,pingresult=None)
+    while(True):
+        pingResult = MyPing.ping(ip)
+        CurrentFilePath = MyPing.write_ping_result_to_file(pingResult, ip)
+        currentTime = MyTime()
+        
+        if currentTime.compare_dates(lastAttemptTime):
+            MyPing.write_ping_stats_to_file(ip, positivePingsThisHourCounter=positivePingsThisHourCounterC,
+                                            negativePingsThisHourCounter=negativePingsThisHourCounterC,
+                                            previousFilePath=previousFilePath)
+            previousFilePath = CurrentFilePath
+            lastAttemptTime = currentTime
+            positivePingsThisHourCounterC = 0
+            negativePingsThisHourCounterC = 0
+            
+        positivePingsThisHourCounterC = positivePingsThisHourCounterC+pingResult[0]
+        negativePingsThisHourCounterC = negativePingsThisHourCounterC+pingResult[1]
+        
+        if positivePingsInRow < positivePingsInRow+pingResult[0]:
+            positivePingsInRow = positivePingsInRow+pingResult[0]
+            negativePingsInRow = 0
+        if negativePingsInRow < negativePingsInRow+pingResult[1]:
+            positivePingsInRow = 0
+            negativePingsInRow = negativePingsInRow+pingResult[1]                
+        if negativePingsInRow == 4 and pingFailedLetterWasSent == False:
+            print("Negative mail was sent")
+            pingFailedLetterWasSent = True
+            # Attention! Put your own mail settings in the code below, do not remove f{ip}:
+            negativeLetterThread = threading.Thread(target=MyMailActivity.send_negative_mail,
+                                                    args=(f"{ip}","sendfrom@gmail.com",
+                                                                 ["sendto1@gmail.com",
+                                                                  "sendto28@gmail.com",
+                                                                  "sendto3@gmail.com"],))
+            negativeLetterThread.start()
+            negativeLetterThread.join()
+        if positivePingsInRow == 20 and pingFailedLetterWasSent == True:
+            print("Positive mail was sent")
+            pingFailedLetterWasSent=False
+            # Attention!Put your own mail settings in the code below, do not remove f{ip}:
+            positiveLetterThread = threading.Thread(target=MyMailActivity.send_negative_mail,
+                                                    args=(f"{ip}","sendfrom@gmail.com",
+                                                                 ["sendto1@gmail.com",
+                                                                  "sendto28@gmail.com",
+                                                                  "sendto3@gmail.com"],))
+            positiveLetterThread.start()
+            positiveLetterThread.join()
 
 if __name__ == '__main__':
-    main()
+    ip = str(sys.argv[1])
+    main(ip)
+
+

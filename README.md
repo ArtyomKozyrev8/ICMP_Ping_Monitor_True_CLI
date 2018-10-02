@@ -1,2 +1,10 @@
 # ICMP_Ping_Monitor_True_CLI
-The program is created to allow separate icmp monitoring of several different ip addresses, the program write ping results to files and send notification letters independently for each ip. The program has TRUE CLI, which is similar to CMD or router CLI. The CLI is based on subpricess.Popen class.
+The program is created to ping several ip addresses, put results in separate txt files, distribute files between folders, send email if ip is not reachable, send email if ip is reachable again. All action are independent for each ip address.
+
+The program has TRUE CLI, which is similar to CMD or router CLI. The CLI is based on subpricess.Popen class.
+
+Note that the program can be used only in Windows OS now, but you can do some changes to try to use it in your OS.
+
+The program need Python3 and initial setup for your needs, please follow comments marked with Attention word in the code to do it. If you face any probelms to do it, feel free to apply to me kozirev8@gmail.com , I'll do my best to help.
+
+Feel free to ask questions and give remommendations. Feel free to use the code in your projects or to to learn from.

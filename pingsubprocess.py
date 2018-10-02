@@ -47,8 +47,7 @@ Best Regards,\nMTT Oy Network Monitor Robot"""
         except:
             with open(file="ErrorLog.txt", mode="a") as f:
                 f.write(str(MyTime(MyTimeMode.full)))
-                f.write("Connection to SMTP server failed.")
-                f.write(errormessage1)            
+                f.write("Connection to SMTP server failed.\n")        
             
     def send_positive_mail(ipAddress, email_sender, email_receiver):
         '''The method sends positive mail if ip is reachable again'''
@@ -79,7 +78,7 @@ Best Regards,\nMTT Oy Network Monitor Robot"""
         except:
             with open(file="ErrorLog.txt", mode="a") as f:
                 f.write(str(MyTime(MyTimeMode.full)))
-                f.write("Connection to SMTP server failed.")
+                f.write("Connection to SMTP server failed.\n")
 
 class MyTimeMode(enum.Enum):
     '''This class is createc to be used in instances of MyTime class to determine options of __str__ format for that clls'''

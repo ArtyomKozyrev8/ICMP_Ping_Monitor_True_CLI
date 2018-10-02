@@ -7,6 +7,8 @@ Note that the program can be used only in Windows OS now, but you can do some ch
 
 The program need Python3 and initial setup for your needs, please follow comments marked with Attention word in the code to do it. If you face any probelms to do it, feel free to apply to me kozirev8@gmail.com , I'll do my best to help.
 
+To use the program you need to apload the both .py () files and put them in one folder 
+
 Feel free to ask questions and give remommendations. Feel free to use the code in your projects or to to learn from.
 
 The program is not the final version, I'm going to add new changes in future, new contributors are welcome.

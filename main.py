@@ -1,3 +1,11 @@
+# Before start using the program you should setup it for yourself.
+# Find all comments which contain Attention word in the pingsubprocess.py file
+# Do the needfull steps which are described in the marked comments.
+# Please do not use mailboxes, to send notiffication messages from, with two stage authentification.
+# It will require additional lines of code.
+# If you struggle any difficulties to setup the program for yourself, feel free to apply to kozirev8@gmail.com
+# If any other question, feel free to let me know, I'll do my best to help.
+
 import subprocess
 import time
 import ipaddress

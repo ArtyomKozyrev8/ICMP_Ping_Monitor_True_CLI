@@ -1,7 +1,7 @@
 # ICMP_Ping_Monitor_True_CLI
 The program is created to ping several ip addresses, put results in separate txt files, distribute files between folders, send email if ip is not reachable, send email if ip is reachable again. All action are independent for each ip address.
 
-The program has TRUE CLI, which is similar to CMD or router CLI. The CLI is based on subpricess.Popen class.
+The program has TRUE CLI, which is similar to CMD or router CLI. The CLI is based on subprocess.Popen class.
 
 Note that the program can be used only in Windows OS now, but you can do some changes to try to use it in your OS.
 

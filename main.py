@@ -107,7 +107,7 @@ class CLI_MENU:
         value will be subprocess.Popen'''
         if CLI_MENU.is_ip_address(str(ip)):
             if not CLI_MENU.is_ip_already_in_monitoring(ip,popenlist): 
-                popenlist[ip]=subprocess.Popen(["python", "tesla.py", ip], stdout=subprocess.DEVNULL)
+                popenlist[ip]=subprocess.Popen(["python", "pingsubprocess.py", ip], stdout=subprocess.DEVNULL)
                 print(f"{ip} was added to monitoring\n")
                 IplistFileOp.write_ip_to_file(ip)
                  

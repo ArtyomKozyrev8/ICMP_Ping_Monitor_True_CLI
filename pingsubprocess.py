@@ -47,7 +47,8 @@ Best Regards,\nMTT Oy Network Monitor Robot"""
         except:
             with open(file="ErrorLog.txt", mode="a") as f:
                 f.write(str(MyTime(MyTimeMode.full)))
-                f.write(f" Connection to SMTP server failed. Session with {ipAddress}. \n")        
+                f.write(f" Connection to SMTP server failed. Letter was not sent. Session with {ipAddress}.\n")
+                f.write(f"{ipAddress} is not reachable.\n")      
             
     def send_positive_mail(ipAddress, email_sender, email_receiver):
         '''The method sends positive mail if ip is reachable again'''
@@ -78,7 +79,8 @@ Best Regards,\nMTT Oy Network Monitor Robot"""
         except:
             with open(file="ErrorLog.txt", mode="a") as f:
                 f.write(str(MyTime(MyTimeMode.full)))
-                f.write(f" Connection to SMTP server failed. Session with {ipAddress}. \n")  
+                f.write(f" Connection to SMTP server failed. Letter was not sent. Session with {ipAddress}.\n")
+                f.write(f"{ipAddress} is reachable again.\n")
 
 class MyTimeMode(enum.Enum):
     '''This class is createc to be used in instances of MyTime class to determine options of __str__ format for that clls'''
@@ -203,7 +205,6 @@ def main(ip):
             positivePingsInRow = 0
             negativePingsInRow = negativePingsInRow+pingResult[1]                
         if negativePingsInRow == 4 and pingFailedLetterWasSent == False:
-            print("Negative mail was sent")
             pingFailedLetterWasSent = True
             # Attention! Put your own mail settings in the code below, do not remove f{ip}:
             negativeLetterThread = threading.Thread(target=MyMailActivity.send_negative_mail,
@@ -214,7 +215,6 @@ def main(ip):
             negativeLetterThread.start()
             negativeLetterThread.join()
         if positivePingsInRow == 20 and pingFailedLetterWasSent == True:
-            print("Positive mail was sent")
             pingFailedLetterWasSent=False
             # Attention!Put your own mail settings in the code below, do not remove f{ip}:
             positiveLetterThread = threading.Thread(target=MyMailActivity.send_negative_mail,

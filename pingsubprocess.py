@@ -219,7 +219,7 @@ def main(ip):
         if positivePingsInRow == 20 and pingFailedLetterWasSent == True:
             pingFailedLetterWasSent=False
             # Attention!Put your own mail settings in the code below, do not remove f{ip}:
-            positiveLetterThread = threading.Thread(target=MyMailActivity.send_negative_mail,
+            positiveLetterThread = threading.Thread(target=MyMailActivity.send_positive_mail,
                                                     args=(f"{ip}","sendfrom@gmail.com",
                                                                  ["sendto1@gmail.com",
                                                                   "sendto2@gmail.com",

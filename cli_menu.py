@@ -14,7 +14,7 @@ def give_help_menu():
     print("del:    Print del and press Enter to remove ip from monitoring.")
     print("        Example: del 1.1.1.1 \n")
     print("show:   Print show and press Enter to see what list of ip is monitored.\n")
-    print("import: Print read and press Enter to read list of ip from IPLIST.txt file.\n")
+    print("import: Print read and press Enter to read list of ip from IPLIST.py file.\n")
     print("exit:   Print exit and press Enter to quit the program.\n")
     print("help:   Print help and press Enter to get help menu.\n")
     print("Just press Enter to get some free space in console screen.\n")
@@ -49,7 +49,7 @@ def analyze_command(command: str) -> list:
         otherwise it is considered as incorrect  and the method return
         string none to cause error in main method'''
 
-    if command == "":
+    if command.strip() == "":
         command = "FreeSpace"
     command = command.split(" ")
     copied_command = command.copy()

@@ -1,4 +1,3 @@
-
 import cli_menu
 import time
 
@@ -32,7 +31,7 @@ def main():
             elif ipexportlist == "FileError":
                 pass
             else:
-                print("File IPLIST.txt contains no IPs, nothing will be added to monitoring.")
+                print("File IPLIST.py contains no IPs, nothing will be added to monitoring.")
         elif command[0] == "show":
             cli_menu.show_ip_in_monitoring(popenList)
         elif command[0] == "help":
@@ -46,8 +45,8 @@ def main():
 
 
 if __name__ == '__main__':
-    #try:
-    main()
-    #except Exception as ex:
-        #print(f"The following error took place {ex}")
-        #time.sleep(30)
+    try:
+        main()
+    except Exception as ex:
+        print(f"The following error took place {ex}")
+        time.sleep(30)

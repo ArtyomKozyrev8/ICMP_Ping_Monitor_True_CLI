@@ -1,14 +1,5 @@
 import cli_menu
 
-menu_wrapper = {
-    "add": add_ip_to_monitoring_menu,
-    "del": del_ip_from_monitoring_menu,
-    "import": import_ip_from_ip_file_list_menu,
-    "show": show_ip_in_monitoring_menu,
-    "help": give_help_menu_menu,
-    "exit": exit_program_menu
-}
-
 
 def add_ip_to_monitoring_menu(popen_list: dict, command: list) -> None:
     if command[0] == "add":
@@ -59,3 +50,13 @@ def give_help_menu_menu(popen_list: dict, command: list) -> None:
 def exit_program_menu(popen_list: dict, command: list) -> None:
     # command is not used here, it is here to simplify method list wrapper
     cli_menu.exit_program(popen_list)
+
+   
+menu_wrapper = {
+    "add": add_ip_to_monitoring_menu,
+    "del": del_ip_from_monitoring_menu,
+    "import": import_ip_from_ip_file_list_menu,
+    "show": show_ip_in_monitoring_menu,
+    "help": give_help_menu_menu,
+    "exit": exit_program_menu
+}

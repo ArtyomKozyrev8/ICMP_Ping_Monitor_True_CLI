@@ -22,17 +22,16 @@ def ping(ip, pinginterval=3):
         else:
             raise PingResultError(pingresult)
     elif sys.platform == 'linux':
-        if sys.platform == 'linux':
-            pingresult = os.system(f"ping -c 1 {ip}")
-            if pingresult == 0:
-                time.sleep(pinginterval)
-                pingresult = (1, 0)  # successfull attempt
-                return pingresult
-            elif pingresult == 512:
-                pingresult = (0, 1)  # failed attempt
-                return pingresult
-            else:
-                raise PingResultError(pingresult)
+        pingresult = os.system(f"ping -c 1 {ip}")
+        if pingresult == 0:
+            time.sleep(pinginterval)
+            pingresult = (1, 0)  # successfull attempt
+            return pingresult
+        elif pingresult == 256:
+            pingresult = (0, 1)  # failed attempt
+            return pingresult
+        else:
+            raise PingResultError(pingresult)
     else:
         sys.stderr.write("Unexpected ping result code was received.\n\n")
         sys.stderr.write("Please check if your OS is supported and apply to developer kozirev8@gmail.com\n\n")

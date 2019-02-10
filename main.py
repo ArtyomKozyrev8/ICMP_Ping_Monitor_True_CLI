@@ -1,6 +1,8 @@
+
 import cli_menu
 import time
 from cli_menu_wrap_lib import menu_wrapper
+import sys
 
 def main():
     popen_list = {} # dictionary of popen subprocesses
@@ -17,8 +19,12 @@ def main():
 
 
 if __name__ == '__main__':
-    #try:
-    main()
-    #except Exception as ex:
-        #print(f"The following error took place {ex}")
-        #time.sleep(30)
+    if sys.platform == 'win32' or sys.platform == 'linux':
+        main()
+    else:
+        print(f"The program is not designed to work in your OS {sys.platform}")
+        print("The program will be terminated in 5 seconds, Sorry...")
+        time.sleep(5)
+        print("Bye")
+        time.sleep(1)
+        sys.exit()

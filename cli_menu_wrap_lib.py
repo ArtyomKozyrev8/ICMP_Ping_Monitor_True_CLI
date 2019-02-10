@@ -2,17 +2,16 @@ import cli_menu
 
 
 def add_ip_to_monitoring_menu(popen_list: dict, command: list) -> None:
-    if command[0] == "add":
-        if len(command) > 1:
-            if cli_menu.is_ip_address(command[1]):
-                cli_menu.add_ip_to_monitoring(command[1], popen_list)
-        else:
-            print("You should put ip address after word add.")
-            print("Print help and press Enter for more information.\n")
+    if len(command) == 2:
+        if cli_menu.is_ip_address(command[1]):
+            cli_menu.add_ip_to_monitoring(command[1], popen_list)
+    else:
+        print("You should put ip address after word add.")
+        print("Print help and press Enter for more information.\n")
 
 
 def del_ip_from_monitoring_menu(popen_list: dict, command: list) -> None:
-    if len(command) > 1:
+    if len(command) == 2:
         cli_menu.remove_ip_from_monitoring(command[1], popen_list)
     else:
         print("You should put ip address after word del.")
@@ -39,20 +38,50 @@ def import_ip_from_ip_file_list_menu(popen_list: dict, command: list) -> None:
 
 def show_ip_in_monitoring_menu(popen_list: dict, command: list) -> None:
     # command is not used here, it is here to simplify method list wrapper
-    cli_menu.show_ip_in_monitoring(popen_list)
+    if len(command) == 1:
+        cli_menu.show_ip_in_monitoring(popen_list)
+    else:
+        print("You should not put any words after show.")
+        print("Print help and press Enter for more information.\n")
 
 
 def give_help_menu_menu(popen_list: dict, command: list) -> None:
     # command and popen_list is not used here, it is here to simplify method list wrapper
-    cli_menu.give_help_menu()
+    if len(command) == 1:
+        cli_menu.give_help_menu()
+    else:
+        print("You should not put any words after help.")
+        print("Print help and press Enter for more information.\n")
 
 
 def exit_program_menu(popen_list: dict, command: list) -> None:
     # command is not used here, it is here to simplify method list wrapper
-    cli_menu.exit_program(popen_list)
+    if len(command) == 1:
+        cli_menu.exit_program(popen_list)
+    else:
+        print("You should not put any words after exit.")
+        print("Print help and press Enter for more information.\n")
 
-   
+
+def setup_menu(popen_list: dict, command: list) -> None:
+    if len(command) == 1:
+        cli_menu.setup_smtp_server()
+    else:
+        print("You should not put any words after exit.")
+        print("Print help and press Enter for more information.\n")
+
+
+def make_email_recipient_list_menu(popen_list: dict, command: list) -> None:
+    if len(command) == 1:
+        cli_menu.make_email_recipient_list()
+    else:
+        print("You should not put any words after recipients.")
+        print("Print help and press Enter for more information.\n")
+
+# This is wrapper  which is used in main.py file
 menu_wrapper = {
+    "recipients": make_email_recipient_list_menu,
+    "setup": setup_menu,
     "add": add_ip_to_monitoring_menu,
     "del": del_ip_from_monitoring_menu,
     "import": import_ip_from_ip_file_list_menu,

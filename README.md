@@ -3,12 +3,34 @@ The program is created to ping several ip addresses, put results in separate txt
 
 The program has TRUE CLI, which is similar to CMD or router CLI. The CLI is based on subprocess.Popen class.
 
-Note that the program can be used only in Windows OS now, but you can do some changes to try to use it in your OS.
+Note that the program can be used only in Windows OS and Unix (tested in Ubuntu) now, but you can do some changes to try to use it in your OS.
 
-The program need Python3 and initial setup for your needs, please follow comments marked with Attention word in the code to do it. If you face any probelms to do it, feel free to apply to me kozirev8@gmail.com , I'll do my best to help.
+The program need Python3.6 or older.
 
-To use the program you need to apload the both .py ( pingsubprocess.py and main.py ) files and put them in one folder. Also you can uplaod release zip file, but code there is less readable, probably since the files were created by GitHub site. 
+To use the program you need to upload all .py and txt files  files and put them in one folder. To start program start main.py file. 
 
 Feel free to ask questions and give remommendations. Feel free to use the code in your projects or to to learn from.
 
+If you face any probelms to do it, feel free to apply to me kozirev8@gmail.com , I'll do my best to help.
+
 The program is not the final version, I'm going to add new changes in future, new contributors are welcome.
+
+File list you should have:
+
+cli_menu.py
+cli_menu_wrap_lib.py
+iplist_file_op.py
+mail_activity.py
+main.py
+ping_op.py
+pingsubprocess.py
+time.lib.py
+
+recovery_notification.txt
+error_notification.txt
+
+All other files to run program will be automatically created after you did all required steps during first launch of the program.
+
+If it is first launch, do setup and recipients commands. Note that when you start the commands you rewrite data, rather than add any new information to the old one.
+
+

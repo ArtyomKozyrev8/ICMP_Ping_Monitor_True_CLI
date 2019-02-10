@@ -28,7 +28,7 @@ def ping(ip, pinginterval=3):
                 time.sleep(pinginterval)
                 pingresult = (1, 0)  # successfull attempt
                 return pingresult
-            elif pingresult == 1:
+            elif pingresult == 512:
                 pingresult = (0, 1)  # failed attempt
                 return pingresult
             else:

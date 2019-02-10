@@ -9,6 +9,10 @@ import iplist_file_op
 def give_help_menu():
     print()
     print("The following list of commands is available in this program version:\n")
+    print("setup:  Print setup and press Enter to make initial setup.")
+    print("        IF YOU USE THE PROGRAM FIRST TIME DO setup command!\n")
+    print("recipients:  Print recipients and press Enter to create recipients list.")
+    print("        IF YOU USE THE PROGRAM FIRST TIME DO recipients command!\n")
     print("add:    Print add and press Enter to add ip to monitoring.")
     print("        Example: add 1.1.1.1 \n")
     print("del:    Print del and press Enter to remove ip from monitoring.")
@@ -29,6 +33,8 @@ def hello_banner():
     print()
     print("   Type your command, if you need help - print help and press Enter   ")
     print()
+    print("  IF YOU USE THE PROGRAM FIRST TIME DO setup and recipients commands! ")
+    print()
 
 
 def is_ip_address(ip: str) -> bool:
@@ -46,8 +52,7 @@ def analyze_command(command: str) -> list:
     ''' This function is used to analyze CLI command, it removes spaces from command,
         if nothing was printed, you will receive string FreeSpace
         CLI Command can't have more then two words,
-        otherwise it is considered as incorrect  and the method return
-        string none to cause error in main method'''
+        otherwise it is considered as incorrect  and the method return list none '''
 
     if command.strip() == "":
         command = "FreeSpace"
@@ -63,6 +68,7 @@ def analyze_command(command: str) -> list:
 
 
 def exit_program(ip_in_monitoring_dict: dict) -> None:
+
     if len(ip_in_monitoring_dict):
         for active_popen in ip_in_monitoring_dict.values():
             active_popen.kill()
@@ -138,4 +144,76 @@ def import_ip_from_file() -> set:
             else:
                 print("Incorrect input was made, please try again.\n")
     return set(ip_list)
+
+
+def setup_smtp_server():
+    print("Please note if you made a mistake, you need to repeat setup process!")
+    print('Please give your email box, you gonna send mails from.\nExample: sendmailsfrom@gmail.com')
+    while True:
+        sender_email = input("Print here: ").strip()
+        if  sender_email != "":
+            break
+        else:
+            print("Your email box can't be empty value. Try again")
+    print('Please give your mail box password.\nExample: yourpassword')
+    while True:
+        email_sender_password = input("Print here: ").strip()
+        if email_sender_password != "":
+            break
+        else:
+            print("Your mail box can't be empty value. Try again")
+    print('Please give your mail server address.\nExample: smtp.gmail.com')
+    while True:
+        smtp_settings = input("Print here: ").strip()
+        if smtp_settings != "":
+            break
+        else:
+            print("Mail server address can't be empty value. Try again")
+    print('Please give SMTP server port.\nExample: 587')
+    while True:
+        smtp_port = input("Print here: ").strip()
+        if smtp_port != "":
+            try:
+                smtp_port = int(smtp_port)
+                break
+            except:
+                print('SMTP server port should be integer value. Try again')
+        else:
+            print("SMTP server port address can't be empty value. Try again")
+
+    settings = (sender_email, email_sender_password, smtp_settings, str(smtp_port))
+    print("You made the following settings:")
+    print(f" sender email: {sender_email}\n", f"sender email password: {email_sender_password}\n",
+          f"SMTP server address: {smtp_settings}\n", f"SMTP port number: {smtp_port}\n")
+    print("If you made something wrong, repeat setup!")
+
+    with open(file="settings.py", mode="w") as f:
+        for i in settings:
+            f.write(f"{i}\n")
+
+
+def make_email_recipient_list():
+    email_recipients = []
+    add_recipient = True
+    while add_recipient:
+        print("Please enter emails of recipient you would like to notify")
+        email = input("Print here: ").strip()
+        if len(email.split()) == 1:
+            email_recipients.append(email)
+            print("Do you want to add another recipient?")
+            while True:
+                want_to_continue = input("If yes print yes, otherwise press enter: ").strip()
+                if want_to_continue.upper() == "YES":
+                    break
+                elif want_to_continue.upper() == "":
+                    add_recipient = False
+                    break
+                else:
+                    print("Incorrect input, please try again.")
+        else:
+            print("You put incorrect email, please try again!")
+    print(f"As a result you have the following list of recipients:\n{email_recipients}")
+    with open(file="email_recipient_list.py", mode="w") as f:
+        for i in email_recipients:
+            f.write(f"{i}\n")
 

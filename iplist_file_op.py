@@ -1,3 +1,6 @@
+'''This library work with IPLIST.py file, please note that not all method do operations with file itself,
+but do some actions with data which were extracted from file earlier'''
+
 def write_ip_to_file(ip: str, filename: str = "IPLIST.py") -> None:
     try:
         with open(filename, mode='a') as f:
@@ -29,7 +32,7 @@ def remove_ip_from_file(ip: str, ip_list: list) -> None:
         print(f"The {ip} is not in ip list file IPLIST.py")
 
 
-def rewrite_file(iplist:list, file: str = "IPLIST.py") -> None:
+def rewrite_file(iplist: list, file: str = "IPLIST.py") -> None:
     with open(file, mode='w') as f:
         for ip in set(iplist):
             f.write(f"{ip}\n")
@@ -37,7 +40,7 @@ def rewrite_file(iplist:list, file: str = "IPLIST.py") -> None:
 
 def show_ip_in_file(ip_list: list):
     '''The function used to show ip addressed, which are in unique file IPLIST.py'''
-    print("The following ips are in file IPLIST.py:\n")
+    print("The following unique ips are in file IPLIST.py:\n")
     for ip in set(ip_list):
         print(ip)
     print()

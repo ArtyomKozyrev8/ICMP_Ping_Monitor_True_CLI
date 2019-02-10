@@ -10,36 +10,41 @@ class PingResultError(Exception):
         self.ping_result_value = f"Unexpected ping result code was received: {ping_result_value}"
 
 def ping(ip, pinginterval=3):
-    if sys.platform == 'win32':
-        pingresult = os.system(f"ping -n 1 {ip}")
-        if pingresult == 0:
-            time.sleep(pinginterval)
-            pingresult = (1, 0)  # successfull attempt
-            return pingresult
-        elif pingresult == 1:
-            pingresult = (0, 1)  # failed attempt
-            return pingresult
+    try:
+        if sys.platform == 'win32':
+            pingresult = os.system(f"ping -n 1 {ip}")
+            if pingresult == 0:
+                time.sleep(pinginterval)
+                pingresult = (1, 0)  # successfull attempt
+                return pingresult
+            elif pingresult == 1:
+                pingresult = (0, 1)  # failed attempt
+                return pingresult
+            else:
+                raise PingResultError(pingresult)
+        elif sys.platform == 'linux':
+            pingresult = os.system(f"ping -c 1 {ip}")
+            if pingresult == 0:
+                time.sleep(pinginterval)
+                pingresult = (1, 0)  # successfull attempt
+                return pingresult
+            elif pingresult == 256:
+                pingresult = (0, 1)  # failed attempt
+                return pingresult
+            else:
+                raise PingResultError(pingresult)
         else:
-            raise PingResultError(pingresult)
-    elif sys.platform == 'linux':
-        pingresult = os.system(f"ping -c 1 {ip}")
-        if pingresult == 0:
-            time.sleep(pinginterval)
-            pingresult = (1, 0)  # successfull attempt
-            return pingresult
-        elif pingresult == 256:
-            pingresult = (0, 1)  # failed attempt
-            return pingresult
-        else:
-            raise PingResultError(pingresult)
-    else:
-        sys.stderr.write("Unexpected ping result code was received.\n\n")
-        sys.stderr.write("Please check if your OS is supported and apply to developer kozirev8@gmail.com\n\n")
-        sys.stderr.write(f"{ip} session crushed.\n\n")
+            sys.stderr.write(f"The program is not designed to work in your OS {sys.platform}")
+            sys.stderr.write(f"{ip} session crushed.")
+            sys.stderr.flush()
+            sys.exit()
+    except PingResultError as ex:
+        sys.stderr.write(f"{ex.ping_result_value}")
+        sys.stderr.write(f"{ip} session crushed.")
         sys.stderr.flush()
         sys.exit()
-
-
+        
+        
 def write_ping_result_to_file(pingresult, ip):
     '''Is used to write ping results to file, return path to the file'''
     currentDirectory = os.getcwd()

@@ -111,8 +111,20 @@ def remove_ip_from_monitoring(ip: str, ip_in_monitoring_dict: dict) -> None:
 def add_ip_to_monitoring(ip: str, ip_in_monitoring_dict: dict) -> None:
     if is_ip_address(ip):
         if not is_ip_already_in_monitoring(ip, ip_in_monitoring_dict):
-            ip_in_monitoring_dict[ip] = subprocess.Popen(["python", "pingsubprocess.py", ip],
-                                                         stdout=subprocess.DEVNULL)
+            if sys.platform == 'win32':
+                ip_in_monitoring_dict[ip] = subprocess.Popen(["python", "pingsubprocess.py", ip],
+                                                             stdout=subprocess.DEVNULL)
+            elif sys.platform == 'linux':
+                ip_in_monitoring_dict[ip] = subprocess.Popen(["python3", "pingsubprocess.py", ip],
+                                                             stdout=subprocess.DEVNULL)
+            else:
+                print(f"The program is not designed to work in your OS {sys.platform}")
+                print("The program will be terminated in 5 seconds, Sorry...")
+                time.sleep(5)
+                print("Bye")
+                time.sleep(1)
+                sys.exit()
+
             print(f"{ip} was added to monitoring\n")
             iplist_file_op.write_ip_to_file(ip)
 

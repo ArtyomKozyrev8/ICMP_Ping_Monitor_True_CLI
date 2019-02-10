@@ -27,7 +27,8 @@ def write_ping_result_to_file(pingresult, ip):
     '''Is used to write ping results to file, return path to the file'''
     currentDirectory = os.getcwd()
     folderToSavePingResultsUpper = ip
-    folderToSavePingResultsMiddle = "MONTH_" + str(time.localtime().tm_mon).rjust(2, '0')
+    folderToSavePingResultsMiddle = "Year_" + str(time.localtime().tm_year) + "Month_"\
+                                    + str(time.localtime().tm_mon).rjust(2, '0')
     folderToSavePingResultsLower = ip + str(MyTime(MyTimeMode.short))
     folderToSavePingResults = os.path.join(currentDirectory,
                                            folderToSavePingResultsUpper,

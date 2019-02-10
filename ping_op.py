@@ -9,6 +9,7 @@ class PingResultError(Exception):
     def __init__(self, ping_result_value):
         self.ping_result_value = f"Unexpected ping result code was received: {ping_result_value}"
 
+
 def ping(ip, pinginterval=3):
     try:
         if sys.platform == 'win32':
@@ -39,12 +40,12 @@ def ping(ip, pinginterval=3):
             sys.stderr.flush()
             sys.exit()
     except PingResultError as ex:
-        sys.stderr.write(f"{ex.ping_result_value}")
+        sys.stderr.write(f"{ex.ping_result_value}\n\n")
         sys.stderr.write(f"{ip} session crushed.")
         sys.stderr.flush()
         sys.exit()
-        
-        
+
+
 def write_ping_result_to_file(pingresult, ip):
     '''Is used to write ping results to file, return path to the file'''
     currentDirectory = os.getcwd()
@@ -60,15 +61,21 @@ def write_ping_result_to_file(pingresult, ip):
         os.makedirs(folderToSavePingResults)  # create it now!
     with open(os.path.join(folderToSavePingResults,
                            f"ping_{str(MyTime(MyTimeMode.middle))}_{ip}.txt"), mode="a") as f:
-        if pingresult == (1, 0):
-            f.write(
-                f"The remote destination {ip} is reachable, everyting is OKAY.{str(MyTime(MyTimeMode.full))} \n")
-        elif pingresult == (0, 1):
-            f.write(f"Ping {ip} failed! {str(MyTime(MyTimeMode.full))} \n")
-        elif pingresult == None: # it is so to allow first ping, see pingsubprocess.py file to understand
-            pass
-        else:
-            raise PingResultError(pingresult)
+        try:
+            if pingresult == (1, 0):
+                f.write(
+                    f"The remote destination {ip} is reachable, everyting is OKAY.{str(MyTime(MyTimeMode.full))} \n")
+            elif pingresult == (0, 1):
+                f.write(f"Ping {ip} failed! {str(MyTime(MyTimeMode.full))} \n")
+            elif pingresult == None: # it is so to allow first ping, see pingsubprocess.py file to understand
+                pass
+            else:
+                raise PingResultError(pingresult)
+        except PingResultError as ex:
+            sys.stderr.write(f"{ex.ping_result_value}\n\n")
+            sys.stderr.write(f"{ip} session crushed.")
+            sys.stderr.flush()
+            sys.exit()
     FilePath = os.path.join(folderToSavePingResults, f"ping_{str(MyTime(MyTimeMode.middle))}_{ip}.txt")
     return FilePath
 

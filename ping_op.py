@@ -2,25 +2,43 @@ import time
 import os
 from time_lib import MyTimeMode
 from time_lib import MyTime
+import sys
 
 
 class PingResultError(Exception):
     def __init__(self, ping_result_value):
-        self.ping_result_value = ping_result_value
-        self.message = "Unexpected ping result code was received"
-
+        self.ping_result_value = f"Unexpected ping result code was received: {ping_result_value}"
 
 def ping(ip, pinginterval=3):
-    pingresult = os.system(f"ping -n 1 {ip}")
-    if pingresult == 0:
-        time.sleep(pinginterval)
-        pingresult = (1, 0)  # successfull attempt
-        return pingresult
-    elif pingresult == 1:
-        pingresult = (0, 1)  # failed attempt
-        return pingresult
+    if sys.platform == 'win32':
+        pingresult = os.system(f"ping -n 1 {ip}")
+        if pingresult == 0:
+            time.sleep(pinginterval)
+            pingresult = (1, 0)  # successfull attempt
+            return pingresult
+        elif pingresult == 1:
+            pingresult = (0, 1)  # failed attempt
+            return pingresult
+        else:
+            raise PingResultError(pingresult)
+    elif sys.platform == 'linux':
+        if sys.platform == 'linux':
+            pingresult = os.system(f"ping -n 1 {ip}")
+            if pingresult == 0:
+                time.sleep(pinginterval)
+                pingresult = (1, 0)  # successfull attempt
+                return pingresult
+            elif pingresult == 1:
+                pingresult = (0, 1)  # failed attempt
+                return pingresult
+            else:
+                raise PingResultError(pingresult)
     else:
-        raise PingResultError(pingresult)
+        sys.stderr.write("Unexpected ping result code was received.\n\n")
+        sys.stderr.write("Please check if your OS is supported and apply to developer kozirev8@gmail.com\n\n")
+        sys.stderr.write(f"{ip} session crushed.\n\n")
+        sys.stderr.flush()
+        sys.exit()
 
 
 def write_ping_result_to_file(pingresult, ip):
@@ -43,7 +61,7 @@ def write_ping_result_to_file(pingresult, ip):
                 f"The remote destination {ip} is reachable, everyting is OKAY.{str(MyTime(MyTimeMode.full))} \n")
         elif pingresult == (0, 1):
             f.write(f"Ping {ip} failed! {str(MyTime(MyTimeMode.full))} \n")
-        elif pingresult == None:
+        elif pingresult == None: # it is so to allow first ping, see pingsubprocess.py file to understand
             pass
         else:
             raise PingResultError(pingresult)

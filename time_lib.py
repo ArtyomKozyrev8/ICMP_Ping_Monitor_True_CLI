@@ -35,3 +35,4 @@ class MyTime:
         t2 = (date_compare.timeNow.tm_year, date_compare.timeNow.tm_mon,
               date_compare.timeNow.tm_mday, date_compare.timeNow.tm_hour)
         return t1 > t2
+#

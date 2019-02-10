@@ -23,7 +23,7 @@ def ping(ip, pinginterval=3):
             raise PingResultError(pingresult)
     elif sys.platform == 'linux':
         if sys.platform == 'linux':
-            pingresult = os.system(f"ping -n 1 {ip}")
+            pingresult = os.system(f"ping -c 1 {ip}")
             if pingresult == 0:
                 time.sleep(pinginterval)
                 pingresult = (1, 0)  # successfull attempt

@@ -36,8 +36,8 @@ def upload_smtp_settings():
     except FileNotFoundError:
         sys.stderr.write("Settings file does not exist or corrupted.\n\n")
         sys.stderr.write("Delete the file if it exists and do setup command\n\n")
-        sys.stderr.write(f"{ip} session crushed.")
-        sys.stderr.write("To restore session to the ip, remove it from monitoring, then add it again!")
+        sys.stderr.write(f"{ip} session crushed.\n\n")
+        sys.stderr.write("To restore session to the ip, add it again!\n\n")
         sys.stderr.flush()
         sys.exit()
     return settings
@@ -53,7 +53,7 @@ def upload_recipients_list():
         sys.stderr.write("email_recipient_list.py file does not exist or corrupted.\n\n")
         sys.stderr.write("Delete the file if it exists and do recipients command\n\n")
         sys.stderr.write(f"{ip} session crushed.\n\n")
-        sys.stderr.write("To restore session to the ip, remove it from monitoring, then add it again!")
+        sys.stderr.write("To restore session to the ip, add it again!\n\n")
         sys.stderr.flush()
         sys.exit()
     return recipients
@@ -152,4 +152,3 @@ def main(ip):
 if __name__ == '__main__':
     ip = str(sys.argv[1])
     main(ip)
-

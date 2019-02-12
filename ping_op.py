@@ -80,6 +80,20 @@ def write_ping_result_to_file(pingresult, ip):
     return FilePath
 
 
+def write_ping_result_to_file_short_version(event, ip):
+    folder_to_save_ping_results = os.path.join(os.getcwd(), ip)
+    if not os.path.exists(folder_to_save_ping_results):  # if the path do not exist then
+        os.makedirs(folder_to_save_ping_results)  # create it now!
+    file_name = "Year_" + str(time.localtime().tm_year) + "Month_"\
+                                    + str(time.localtime().tm_mon).rjust(2, '0')
+    with open(os.path.join(folder_to_save_ping_results, f"{file_name}.txt"), mode="a") as f:
+        if event:
+            f.write(f"The address {ip} is not reachable! {str(MyTime(MyTimeMode.full))} \n")
+        else:
+            f.write(f"The address {ip} is reachable again, {str(MyTime(MyTimeMode.full))} \n")
+
+
+
 def write_ping_stats_to_file(ip, positivePingsThisHourCounter,
                              negativePingsThisHourCounter, previousFilePath):
     '''Writes percent of successfull attempts to file which was used to write ping reuslts in wuthin previous hour'''

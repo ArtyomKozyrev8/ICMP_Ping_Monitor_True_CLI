@@ -3,6 +3,17 @@ import time
 from cli_menu_wrap_lib import menu_wrapper
 import sys
 
+
+def check_if_all_subprocess_alive(popen_list: dict)-> dict:
+    if popen_list:
+        popen_list_copy = popen_list.copy()
+        for ip in popen_list.keys():
+            if popen_list[ip].poll() is not None:
+                cli_menu.remove_ip_from_monitoring(ip, popen_list_copy)
+        popen_list = popen_list_copy
+    return popen_list
+
+
 def main():
     popen_list = {} # dictionary of popen subprocesses
     cli_menu.hello_banner()
@@ -15,6 +26,7 @@ def main():
             print()
         else:
             print("Incorrect command, Please try again.\n")
+        popen_list = check_if_all_subprocess_alive(popen_list)
 
 
 if __name__ == '__main__':

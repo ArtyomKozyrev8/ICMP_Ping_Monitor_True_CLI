@@ -192,11 +192,19 @@ def setup_smtp_server():
                 print('SMTP server port should be integer value. Try again')
         else:
             print("SMTP server port address can't be empty value. Try again")
+    print('Please choose Log Mode. Choose only short or long.')
+    while True:
+        log_mode = input("Print here: ").strip()
+        if log_mode == "short" or log_mode == "long":
+            break
+        else:
+            print("Incorrect Log Mode. Choose only short or long. Try again")
 
-    settings = (sender_email, email_sender_password, smtp_settings, str(smtp_port))
+    settings = (sender_email, email_sender_password, smtp_settings, str(smtp_port), log_mode)
     print("You made the following settings:")
     print(f" sender email: {sender_email}\n", f"sender email password: {email_sender_password}\n",
-          f"SMTP server address: {smtp_settings}\n", f"SMTP port number: {smtp_port}\n")
+          f"SMTP server address: {smtp_settings}\n", f"SMTP port number: {smtp_port}\n",
+          f"Log Mode: {log_mode}\n")
     print("If you made something wrong, repeat setup!")
 
     with open(file="settings.py", mode="w") as f:
@@ -228,8 +236,3 @@ def make_email_recipient_list():
     with open(file="email_recipient_list.py", mode="w") as f:
         for i in email_recipients:
             f.write(f"{i}\n")
-
-
-
-
-

@@ -38,7 +38,6 @@ def upload_smtp_settings():
         sys.stderr.write("Delete the file if it exists and do setup command\n\n")
         sys.stderr.write(f"{ip} session crushed.\n\n")
         sys.stderr.write("To restore session to the ip, add it again!\n")
-        sys.stderr.write("To restore session to the ip, add it again!\n\n")
         sys.stderr.flush()
         sys.exit()
     return settings
@@ -55,7 +54,6 @@ def upload_recipients_list():
         sys.stderr.write("Delete the file if it exists and do recipients command\n\n")
         sys.stderr.write(f"{ip} session crushed.\n\n")
         sys.stderr.write("To restore session to the ip, add it again!\n")
-        sys.stderr.write("To restore session to the ip, add it again!\n\n")
         sys.stderr.flush()
         sys.exit()
     return recipients

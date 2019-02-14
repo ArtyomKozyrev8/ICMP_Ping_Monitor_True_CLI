@@ -37,7 +37,7 @@ def upload_smtp_settings():
         sys.stderr.write("Settings file does not exist or corrupted.\n\n")
         sys.stderr.write("Delete the file if it exists and do setup command\n\n")
         sys.stderr.write(f"{ip} session crushed.\n\n")
-        sys.stderr.write("To restore session to the ip, add it again!")
+        sys.stderr.write("To restore session to the ip, add it again!\n")
         sys.stderr.flush()
         sys.exit()
     return settings
@@ -53,7 +53,7 @@ def upload_recipients_list():
         sys.stderr.write("email_recipient_list.py file does not exist or corrupted.\n\n")
         sys.stderr.write("Delete the file if it exists and do recipients command\n\n")
         sys.stderr.write(f"{ip} session crushed.\n\n")
-        sys.stderr.write("To restore session to the ip, add it again!")
+        sys.stderr.write("To restore session to the ip, add it again!\n")
         sys.stderr.flush()
         sys.exit()
     return recipients
@@ -82,7 +82,7 @@ def notificator(pingFailedLetterWasSent, negativePingsInRow, positivePingsInRow,
         negativeLetterThread.start()
         negativeLetterThread.join()
 
-    if positivePingsInRow == 20 and pingFailedLetterWasSent:
+    if positivePingsInRow == 10 and pingFailedLetterWasSent:
         pingFailedLetterWasSent = False
         sys.stderr.write(f"{ip} is  reachable again now.\n\n")
         sys.stderr.flush()
@@ -103,7 +103,7 @@ def notificator(pingFailedLetterWasSent, negativePingsInRow, positivePingsInRow,
     return pingFailedLetterWasSent
 
 
-def main(ip):
+def main(ip, interval):
     error_mail_message = upload_error_notification_msg()
     recovery_mail_message = upload_recovery_notification_msg()
     if error_mail_message is None or recovery_mail_message is None:
@@ -130,7 +130,7 @@ def main(ip):
         lastAttemptTime = MyTime()
         previousFilePath = ping_op.write_ping_result_to_file(ip=ip, pingresult=None)
     while (True):
-        pingResult = ping_op.ping(ip)
+        pingResult = ping_op.ping(ip, interval)
         if log_mode == "long":
             CurrentFilePath = ping_op.write_ping_result_to_file(pingResult, ip)
             currentTime = MyTime()
@@ -161,4 +161,5 @@ def main(ip):
 
 if __name__ == '__main__':
     ip = str(sys.argv[1])
-    main(ip)
+    interval = int(sys.argv[2])
+    main(ip, interval)

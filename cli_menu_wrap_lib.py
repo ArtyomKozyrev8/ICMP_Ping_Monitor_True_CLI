@@ -2,11 +2,11 @@ import cli_menu
 
 
 def add_ip_to_monitoring_menu(popen_list: dict, command: list) -> None:
-    if len(command) == 2:
-        if cli_menu.is_ip_address(command[1]):
-            cli_menu.add_ip_to_monitoring(command[1], popen_list)
+    if len(command) == 3:
+        if cli_menu.is_ip_address(command[1]) and cli_menu.is_digit(command[2]):
+            cli_menu.add_ip_to_monitoring(command[1], command[2], popen_list)
     else:
-        print("You should put ip address after word add.")
+        print("You should put ip address after word add then interval in seconds.")
         print("Print help and press Enter for more information.\n")
 
 
@@ -18,15 +18,13 @@ def del_ip_from_monitoring_menu(popen_list: dict, command: list) -> None:
         print("Print help and press Enter for more information.\n")
 
 
-def import_ip_from_ip_file_list_menu(popen_list: dict, command: list) -> None:
+def import_ip_from_ip_file_list_menu(popen_list: dict, command: list) -> None:  #!!!!!!!!
     if len(command) == 1:
         ipexportlist = cli_menu.import_ip_from_file()
         if len(ipexportlist) > 0 and (ipexportlist != "FileError"):
             for ip in ipexportlist:
-                if cli_menu.is_ip_address(ip):
-                    cli_menu.add_ip_to_monitoring(ip, popen_list)
-                else:
-                    print(f"{ip} is not a correct ip, it will not be added to monitoring.")
+                x = ip.split('INTERVAL')
+                cli_menu.add_ip_to_monitoring(x[0], x[1], popen_list)
         elif ipexportlist == "FileError":
             pass
         else:
@@ -65,7 +63,7 @@ def exit_program_menu(popen_list: dict, command: list) -> None:
 
 def setup_menu(popen_list: dict, command: list) -> None:
     if len(command) == 1:
-        cli_menu.setup_smtp_server()
+        cli_menu.setup()
     else:
         print("You should not put any words after exit.")
         print("Print help and press Enter for more information.\n")

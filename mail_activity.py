@@ -61,4 +61,3 @@ def send_positive_mail(ipAddress, email_sender, email_receiver, message_body,
             sys.stderr.flush()
             f.write(f"{ipAddress} is reachable again.\n")
             f.write(f"Error info: {ex} \n\n")
-            

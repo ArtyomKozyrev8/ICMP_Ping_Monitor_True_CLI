@@ -14,7 +14,9 @@ def give_help_menu():
     print("recipients:  Print recipients and press Enter to create recipients list.")
     print("        IF YOU USE THE PROGRAM FIRST TIME DO recipients command!\n")
     print("add:    Print add and press Enter to add ip to monitoring.")
-    print("        Example: add 1.1.1.1 \n")
+    print("        Pings are made within certain interval.")
+    print("        Example: add 1.1.1.1 10")
+    print("        Example: add address interval_in_seconds\n")
     print("del:    Print del and press Enter to remove ip from monitoring.")
     print("        Example: del 1.1.1.1 \n")
     print("show:   Print show and press Enter to see what list of ip is monitored.\n")
@@ -48,6 +50,16 @@ def is_ip_address(ip: str) -> bool:
         return True
 
 
+def is_digit(interval: str) -> bool:
+    try:
+        int(interval)
+    except ValueError:
+        print(f"IP {interval} is not correct time interval in seconds.\nIt can't be added to monitoring.\n")
+        return False
+    else:
+        return True
+
+
 def analyze_command(command: str) -> list:
     ''' This function is used to analyze CLI command, it removes spaces from command,
         if nothing was printed, you will receive string FreeSpace
@@ -62,7 +74,7 @@ def analyze_command(command: str) -> list:
         if element == "":
             copied_command.remove(element)
     command = copied_command
-    if len(command) > 2 or len(command) == 0:
+    if len(command) > 3 or len(command) == 0: # seconds part!!!!
         command = ["none"]
     return command
 
@@ -108,14 +120,14 @@ def remove_ip_from_monitoring(ip: str, ip_in_monitoring_dict: dict) -> None:
         print("To get help print help then press Enter\n")
 
 
-def add_ip_to_monitoring(ip: str, ip_in_monitoring_dict: dict) -> None:
+def add_ip_to_monitoring(ip: str, interval: int, ip_in_monitoring_dict: dict) -> None:
     if is_ip_address(ip):
         if not is_ip_already_in_monitoring(ip, ip_in_monitoring_dict):
             if sys.platform == 'win32':
-                ip_in_monitoring_dict[ip] = subprocess.Popen(["python", "pingsubprocess.py", ip],
+                ip_in_monitoring_dict[ip] = subprocess.Popen(["python", "pingsubprocess.py", ip, interval],
                                                              stdout=subprocess.DEVNULL)
             elif sys.platform == 'linux':
-                ip_in_monitoring_dict[ip] = subprocess.Popen(["python3", "pingsubprocess.py", ip],
+                ip_in_monitoring_dict[ip] = subprocess.Popen(["python3", "pingsubprocess.py", ip, interval],
                                                              stdout=subprocess.DEVNULL)
             else:
                 print(f"The program is not designed to work in your OS {sys.platform}")
@@ -126,7 +138,7 @@ def add_ip_to_monitoring(ip: str, ip_in_monitoring_dict: dict) -> None:
                 sys.exit()
 
             print(f"{ip} was added to monitoring\n")
-            iplist_file_op.write_ip_to_file(ip)
+            iplist_file_op.write_ip_to_file(f"{ip}INTERVAL{interval}")  #!!!!
 
 
 def import_ip_from_file() -> set:
@@ -142,7 +154,7 @@ def import_ip_from_file() -> set:
         if ip == "":
             break
         else:
-            iplist_file_op.remove_ip_from_file(ip, ip_list)
+            ip_list = iplist_file_op.remove_ip_from_file(ip, ip_list)
             iplist_file_op.show_ip_in_file(ip_list)
         while True:
             remove_more_ip = input("Print yes and press Enter to remove more ip, otherwise press Enter:\n")
@@ -155,10 +167,10 @@ def import_ip_from_file() -> set:
                 break
             else:
                 print("Incorrect input was made, please try again.\n")
-    return set(ip_list)
+    return ip_list
 
 
-def setup_smtp_server():
+def setup():
     print("Please note if you made a mistake, you need to repeat setup process!")
     print('Please give your email box, you gonna send mails from.\nExample: sendmailsfrom@gmail.com')
     while True:

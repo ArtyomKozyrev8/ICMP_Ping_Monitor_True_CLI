@@ -93,7 +93,6 @@ def write_ping_result_to_file_short_version(event, ip):
             f.write(f"The address {ip} is reachable again, {str(MyTime(MyTimeMode.full))} \n")
 
 
-
 def write_ping_stats_to_file(ip, positivePingsThisHourCounter,
                              negativePingsThisHourCounter, previousFilePath):
     '''Writes percent of successfull attempts to file which was used to write ping reuslts in wuthin previous hour'''

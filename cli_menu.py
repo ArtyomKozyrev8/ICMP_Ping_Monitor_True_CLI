@@ -2,6 +2,7 @@ import subprocess
 import ipaddress
 import time
 import sys
+import re
 
 import iplist_file_op
 
@@ -92,10 +93,13 @@ def exit_program(ip_in_monitoring_dict: dict) -> None:
 
 
 def show_ip_in_monitoring(ip_in_monitoring_dict: dict) -> None:
-
     if not len(ip_in_monitoring_dict) == 0:
+        ip_list_in_file = iplist_file_op.read_ip_from_file()[1]
         for ip in ip_in_monitoring_dict.keys():
-            print(f"{ip} is monitored now.")
+            for element in ip_list_in_file:
+                if re.search(string=element, pattern=ip) is not None:
+                    print(" ".join(element.split("INTERVAL")))
+                    break
     else:
         print("There is no ip in monitoring now.\n")
 

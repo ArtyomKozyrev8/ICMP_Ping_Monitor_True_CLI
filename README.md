@@ -7,7 +7,7 @@ Note that the program can be used only in Windows OS and Unix (tested in Ubuntu 
 
 The program need Python3.6 or older.
 
-To use the program you need to upload all .py and txt files  files and put them in one folder. To start program start main.py file. 
+To use the program you need to upload all files. To start program start main.py file. 
 
 Feel free to ask questions and give remommendations. Feel free to use the code in your projects or to to learn from.
 

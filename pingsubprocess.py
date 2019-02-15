@@ -1,13 +1,14 @@
 import threading
 import sys
-import mail_activity
-import ping_op
-from time_lib import MyTime
+import os
+from myscripts import mail_activity, ping_op
+from myscripts.time_lib import MyTime
 
 
 def upload_error_notification_msg():
+    file_name = os.path.join(os.getcwd(), "notification_texts", "error_notification.txt")
     try:
-        with open(file="error_notification.txt", mode='r') as f:
+        with open(file=file_name, mode='r') as f:
             temporary = f.read()
             return temporary
     except FileNotFoundError:
@@ -17,8 +18,9 @@ def upload_error_notification_msg():
 
 
 def upload_recovery_notification_msg():
+    file_name = os.path.join(os.getcwd(), "notification_texts", "recovery_notification.txt")
     try:
-        with open(file="recovery_notification.txt", mode='r') as f:
+        with open(file=file_name, mode='r') as f:
             temporary = f.read()
             return temporary
     except FileNotFoundError:
@@ -29,15 +31,16 @@ def upload_recovery_notification_msg():
 
 def upload_smtp_settings():
     settings = []
+    file_name = os.path.join(os.getcwd(), "settings", "settings.py")
     try:
-        with open(file="settings.py", mode="r") as f:
+        with open(file=file_name , mode="r") as f:
             for i in f:
                 settings.append(i.strip("\\\n"))
     except FileNotFoundError:
         sys.stderr.write("Settings file does not exist or corrupted.\n\n")
         sys.stderr.write("Delete the file if it exists and do setup command\n\n")
         sys.stderr.write(f"{ip} session crushed.\n\n")
-        sys.stderr.write("To restore session to the ip, add it again!")
+        sys.stderr.write("To restore session to the ip, add it again!\n")
         sys.stderr.flush()
         sys.exit()
     return settings
@@ -45,15 +48,16 @@ def upload_smtp_settings():
 
 def upload_recipients_list():
     recipients = []
+    file_name = os.path.join(os.getcwd(), "settings", "email_recipient_list.py")
     try:
-        with open(file="email_recipient_list.py", mode="r") as f:
+        with open(file=file_name, mode="r") as f:
             for i in f:
                 recipients.append(i.strip("\\\n"))
     except FileNotFoundError:
         sys.stderr.write("email_recipient_list.py file does not exist or corrupted.\n\n")
         sys.stderr.write("Delete the file if it exists and do recipients command\n\n")
         sys.stderr.write(f"{ip} session crushed.\n\n")
-        sys.stderr.write("To restore session to the ip, add it again!")
+        sys.stderr.write("To restore session to the ip, add it again!\n")
         sys.stderr.flush()
         sys.exit()
     return recipients
@@ -78,11 +82,11 @@ def notificator(pingFailedLetterWasSent, negativePingsInRow, positivePingsInRow,
                                                       email_sender_password,
                                                       smtp_settings,
                                                       smtp_port
-                                                      ),)
+                                                      ), )
         negativeLetterThread.start()
         negativeLetterThread.join()
 
-    if positivePingsInRow == 20 and pingFailedLetterWasSent:
+    if positivePingsInRow == 10 and pingFailedLetterWasSent:
         pingFailedLetterWasSent = False
         sys.stderr.write(f"{ip} is  reachable again now.\n\n")
         sys.stderr.flush()
@@ -97,13 +101,13 @@ def notificator(pingFailedLetterWasSent, negativePingsInRow, positivePingsInRow,
                                                       email_sender_password,
                                                       smtp_settings,
                                                       smtp_port
-                                                      ),)
+                                                      ), )
         positiveLetterThread.start()
         positiveLetterThread.join()
     return pingFailedLetterWasSent
 
 
-def main(ip):
+def main(ip, interval):
     error_mail_message = upload_error_notification_msg()
     recovery_mail_message = upload_recovery_notification_msg()
     if error_mail_message is None or recovery_mail_message is None:
@@ -129,8 +133,11 @@ def main(ip):
         negativePingsThisHourCounterC = 0
         lastAttemptTime = MyTime()
         previousFilePath = ping_op.write_ping_result_to_file(ip=ip, pingresult=None)
-    while (True):
-        pingResult = ping_op.ping(ip)
+    while True:
+        if not pingFailedLetterWasSent:
+            pingResult = ping_op.ping(ip, interval)
+        else:
+            pingResult = ping_op.ping(ip, 2)
         if log_mode == "long":
             CurrentFilePath = ping_op.write_ping_result_to_file(pingResult, ip)
             currentTime = MyTime()
@@ -161,4 +168,6 @@ def main(ip):
 
 if __name__ == '__main__':
     ip = str(sys.argv[1])
-    main(ip)
+    interval = int(sys.argv[2])
+    main(ip, interval)
+

@@ -130,7 +130,10 @@ def main(ip, interval):
         lastAttemptTime = MyTime()
         previousFilePath = ping_op.write_ping_result_to_file(ip=ip, pingresult=None)
     while (True):
-        pingResult = ping_op.ping(ip, interval)
+        if not pingFailedLetterWasSent:
+            pingResult = ping_op.ping(ip, interval)
+        else:
+            pingResult = ping_op.ping(ip, 2)
         if log_mode == "long":
             CurrentFilePath = ping_op.write_ping_result_to_file(pingResult, ip)
             currentTime = MyTime()

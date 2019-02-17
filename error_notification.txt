@@ -1,8 +1,0 @@
-Dear Team,
-
-We observe that address {0} is not reachable within last 30 seconds. Now {1}.
-
-We ask you to investigate the issue and undertake all necessary steps to solve the problem.
-
-Best Regards,
-Network Monitor Robot

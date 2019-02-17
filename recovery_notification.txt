@@ -1,8 +1,0 @@
-Dear Team,
-
-We observe that address {0} has recovered and is stable within last 60 seconds. Now {1}.
-
-We ask you to investigate and provide us RFO.
-
-Best Regards,
-Network Monitor Robot

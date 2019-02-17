@@ -1,6 +1,6 @@
-import cli_menu
+from myscripts import cli_menu
 import time
-from cli_menu_wrap_lib import menu_wrapper
+from myscripts.cli_menu_wrap_lib import menu_wrapper
 import sys
 
 

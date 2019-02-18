@@ -16,7 +16,7 @@ def give_help_menu():
     print("        Pings are made within certain interval.")
     print("        Example: add 1.1.1.1 10 hostname")
     print("        Example: add 1.1.1.1 10 ")
-    print("        Example: add address interval_in_seconds\n")
+    print("        Example: add address interval_in_seconds hostname_if_needed\n")
     print("del:    Print del and press Enter to remove ip from monitoring.")
     print("        Example: del 1.1.1.1 \n")
     print("show:   Print show and press Enter to see what list of ip is monitored.\n")

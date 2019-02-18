@@ -1,7 +1,7 @@
 import threading
 import sys
 import os
-from myscripts import mail_activity, ping_op
+from myscripts import mail_activity, ping_op, database_op
 from myscripts.time_lib import MyTime
 
 
@@ -33,13 +33,14 @@ def upload_smtp_settings():
     settings = []
     file_name = os.path.join(os.getcwd(), "settings", "settings.py")
     try:
+        ipaddress, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
         with open(file=file_name , mode="r") as f:
             for i in f:
                 settings.append(i.strip("\\\n"))
     except FileNotFoundError:
         sys.stderr.write("Settings file does not exist or corrupted.\n\n")
         sys.stderr.write("Delete the file if it exists and do setup command\n\n")
-        sys.stderr.write(f"{ip} session crushed.\n\n")
+        sys.stderr.write("{} {} session crushed.\n\n".format(ip, hostname))
         sys.stderr.write("To restore session to the ip, add it again!\n")
         sys.stderr.flush()
         sys.exit()
@@ -50,13 +51,14 @@ def upload_recipients_list():
     recipients = []
     file_name = os.path.join(os.getcwd(), "settings", "email_recipient_list.py")
     try:
+        ipaddress, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
         with open(file=file_name, mode="r") as f:
             for i in f:
                 recipients.append(i.strip("\\\n"))
     except FileNotFoundError:
         sys.stderr.write("email_recipient_list.py file does not exist or corrupted.\n\n")
         sys.stderr.write("Delete the file if it exists and do recipients command\n\n")
-        sys.stderr.write(f"{ip} session crushed.\n\n")
+        sys.stderr.write("{} {} session crushed.\n\n".format(ip, hostname))
         sys.stderr.write("To restore session to the ip, add it again!\n")
         sys.stderr.flush()
         sys.exit()
@@ -67,16 +69,17 @@ def notificator(pingFailedLetterWasSent, negativePingsInRow, positivePingsInRow,
                 email_sender_box, email_recepient_list, error_mail_message, recovery_mail_message,
                 email_sender_password, smtp_settings, smtp_port, mode):
 
+    ipaddress, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
     if negativePingsInRow == 4 and not pingFailedLetterWasSent:
         pingFailedLetterWasSent = True
-        sys.stderr.write(f"{ip} is not reachable.\n\n")
+        sys.stderr.write("{} {} is not reachable.\n\n".format(ip, hostname))
         sys.stderr.flush()
 
         if mode == "short":
             ping_op.write_ping_result_to_file_short_version(pingFailedLetterWasSent, ip)
 
         negativeLetterThread = threading.Thread(target=mail_activity.send_negative_mail,
-                                                args=(f"{ip}", email_sender_box,
+                                                args=("{}".format(ip), email_sender_box,
                                                       email_recepient_list,
                                                       error_mail_message,
                                                       email_sender_password,
@@ -88,14 +91,14 @@ def notificator(pingFailedLetterWasSent, negativePingsInRow, positivePingsInRow,
 
     if positivePingsInRow == 10 and pingFailedLetterWasSent:
         pingFailedLetterWasSent = False
-        sys.stderr.write(f"{ip} is  reachable again now.\n\n")
+        sys.stderr.write("{} {} is  reachable again now.\n\n".format(ip, hostname))
         sys.stderr.flush()
 
         if mode == "short":
             ping_op.write_ping_result_to_file_short_version(pingFailedLetterWasSent, ip)
 
         positiveLetterThread = threading.Thread(target=mail_activity.send_positive_mail,
-                                                args=(f"{ip}", email_sender_box,
+                                                args=("{}".format(ip), email_sender_box,
                                                       email_recepient_list,
                                                       recovery_mail_message,
                                                       email_sender_password,
@@ -108,10 +111,11 @@ def notificator(pingFailedLetterWasSent, negativePingsInRow, positivePingsInRow,
 
 
 def main(ip, interval):
+    ipaddress, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
     error_mail_message = upload_error_notification_msg()
     recovery_mail_message = upload_recovery_notification_msg()
     if error_mail_message is None or recovery_mail_message is None:
-        sys.stderr.write(f"{ip} session crushed.\n")
+        sys.stderr.write("{} {} session crushed.\n".format(ip, hostname))
         sys.stderr.flush()
         sys.exit()
 
@@ -170,4 +174,3 @@ if __name__ == '__main__':
     ip = str(sys.argv[1])
     interval = int(sys.argv[2])
     main(ip, interval)
-

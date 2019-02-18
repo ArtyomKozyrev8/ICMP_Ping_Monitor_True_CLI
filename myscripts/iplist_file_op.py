@@ -20,16 +20,16 @@ def write_ip_to_file(ip: str, filename: str = file_name) -> None:
     if x not in file_text:
         try:
             with open(filename, mode='a') as f:
-                f.write(f"{ip}\n")
+                f.write("{}\n".format(ip))
         except Exception as ex:
-            print(f"The following unexpected event happened {ex}")
+            print("The following unexpected event happened {}".format(ex))
     else:
-        file_text = re.sub(string=file_text, pattern=f"{x}INTERVAL.*", repl=ip)
+        file_text = re.sub(string=file_text, pattern="{}INTERVAL.*".format(x), repl=ip)
         try:
             with open(filename, mode='w') as f:
                 f.write(file_text)
         except Exception as ex:
-            print(f"The following unexpected event happened {ex}")
+            print("The following unexpected event happened {}".format(ex))
 
 
 def read_ip_from_file(filename: str = file_name) -> tuple:
@@ -55,14 +55,14 @@ def remove_ip_from_file(ip: str, ip_list: list) -> None:
         for record in ip_list:
             if re.search(string=record, pattern=ip) is not None:
                 temp_ip_list.remove(record)
-                print(f"The {ip} was removed from ip list file IPLIST.py")
+                print("The {} was removed from ip list file IPLIST.py".format(ip))
                 break
         ip_list = temp_ip_list
         end = len(ip_list)
         if end == start:
-            print(f"The {ip} is not in ip list file IPLIST.py")
+            print("The {} is not in ip list file IPLIST.py".format(ip))
     else:
-        print(f"The IPLIST.py file is already empty")
+        print("The IPLIST.py file is already empty")
     return ip_list
 
 
@@ -70,7 +70,7 @@ def rewrite_file(iplist: list, file: str = file_name) -> None:
     with open(file, mode='w') as f:
         for ip in iplist:
             if ip is not "\n":
-                f.write(f"{ip}\n")
+                f.write("{}\n".format(ip))
 
 
 def show_ip_in_file(ip_list: list):
@@ -79,5 +79,5 @@ def show_ip_in_file(ip_list: list):
     for ip in ip_list:
         address = ip.split("INTERVAL")[0]
         interval = ip.split("INTERVAL")[1]
-        print(f"{address} {interval}")
+        print("{} {}".format(address, interval))
     print()

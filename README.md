@@ -3,9 +3,9 @@ The program is created to ping several ip addresses, put results in separate txt
 
 The program has TRUE CLI, which is similar to CMD or router CLI. The CLI is based on subprocess.Popen class.
 
-Note that the program can be used only in Windows OS and Unix (tested in Ubuntu 18.04) now, but you can do some changes to try to use it in your OS.
+Note that the program can be used only in Windows OS and Unix (tested in Ubuntu 18.04 and Debian-9.8.0-amd64-xfce) now, but you can do some changes to try to use it in your OS.
 
-The program need Python3.6 or older.
+The program was tested with Python 3.5 - 3.7 .
 
 To use the program you need to upload all files. To start program start main.py file. 
 

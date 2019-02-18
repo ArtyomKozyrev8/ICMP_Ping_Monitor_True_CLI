@@ -46,7 +46,7 @@ def is_ip_address(ip: str) -> bool:
     try:
         ipaddress.IPv4Address(address=str(ip))
     except ipaddress.AddressValueError:
-        print(f"IP {ip} is an incorrect address. It can't be added to monitoring.\n")
+        print("IP {} is an incorrect address. It can't be added to monitoring.\n".format(ip))
         return False
     else:
         return True
@@ -56,7 +56,7 @@ def is_digit(interval: str) -> bool:
     try:
         int(interval)
     except ValueError:
-        print(f"IP {interval} is not correct time interval in seconds.\nIt can't be added to monitoring.\n")
+        print("IP {} is not correct time interval in seconds.\nIt can't be added to monitoring.\n".format(interval))
         return False
     else:
         return True
@@ -107,7 +107,7 @@ def show_ip_in_monitoring(ip_in_monitoring_dict: dict) -> None:
 
 def is_ip_already_in_monitoring(ip: str, ip_in_monitoring_dict: dict) -> bool:
     if ip in ip_in_monitoring_dict.keys():
-        print(f"{ip} address is already in monitoring.\n")
+        print("{} address is already in monitoring.\n".format(ip))
         return True
     else:
         return False
@@ -118,9 +118,9 @@ def remove_ip_from_monitoring(ip: str, ip_in_monitoring_dict: dict) -> None:
     if ip in ip_in_monitoring_dict.keys():
         ip_in_monitoring_dict[ip].kill()
         del ip_in_monitoring_dict[ip]
-        print(f"{ip} is removed from monitoring\n")
+        print("{} is removed from monitoring\n".format(ip))
     else:
-        print(f"The mentioned ip {ip} address is not in monitoring.\n")
+        print("The mentioned ip {} address is not in monitoring.\n".format(ip))
         print("Use show command to see all ip which are monitored.")
         print("To get help print help then press Enter\n")
 
@@ -135,15 +135,15 @@ def add_ip_to_monitoring(ip: str, interval: int, ip_in_monitoring_dict: dict) ->
                 ip_in_monitoring_dict[ip] = subprocess.Popen(["python3", "pingsubprocess.py", ip, interval],
                                                              stdout=subprocess.DEVNULL)
             else:
-                print(f"The program is not designed to work in your OS {sys.platform}")
+                print("The program is not designed to work in your OS {}".format(sys.platform))
                 print("The program will be terminated in 5 seconds, Sorry...")
                 time.sleep(5)
                 print("Bye")
                 time.sleep(1)
                 sys.exit()
 
-            print(f"{ip} was added to monitoring\n")
-            iplist_file_op.write_ip_to_file(f"{ip}INTERVAL{interval}")  #!!!!
+            print("{} was added to monitoring\n".format(ip))
+            iplist_file_op.write_ip_to_file("{}INTERVAL{}".format(ip, interval))  #!!!!
 
 
 def import_ip_from_file() -> set:
@@ -219,16 +219,16 @@ def setup():
 
     settings = (sender_email, email_sender_password, smtp_settings, str(smtp_port), log_mode)
     print("You made the following settings:")
-    print(f" sender email: {sender_email}\n", f"sender email password: {email_sender_password}\n",
-          f"SMTP server address: {smtp_settings}\n", f"SMTP port number: {smtp_port}\n",
-          f"Log Mode: {log_mode}\n")
+    print(" sender email: {}\n".format(sender_email), "sender email password: {}\n".format(email_sender_password),
+          "SMTP server address: {}\n".format(smtp_settings), "SMTP port number: {}\n".format(smtp_port),
+          "Log Mode: {}\n".format(log_mode))
     print("If you made something wrong, repeat setup!")
     way = os.path.join(os.getcwd(), "settings")
     if not os.path.exists(way):
         os.makedirs(way)
     with open(file=os.path.join(way, "settings.py"), mode="w") as f:
         for i in settings:
-            f.write(f"{i}\n")
+            f.write("{}\n".format(i))
 
 
 def make_email_recipient_list():
@@ -251,17 +251,10 @@ def make_email_recipient_list():
                     print("Incorrect input, please try again.")
         else:
             print("You put incorrect email, please try again!")
-    print(f"As a result you have the following list of recipients:\n{email_recipients}")
+    print("As a result you have the following list of recipients:\n{}".format(email_recipients))
     way = os.path.join(os.getcwd(), "settings")
     if not os.path.exists(way):
         os.makedirs(way)
     with open(file=os.path.join(way, "email_recipient_list.py"), mode="w") as f:
         for i in email_recipients:
-            f.write(f"{i}\n")
-
-
-
-
-
-
-
+            f.write("{}\n".format(i))

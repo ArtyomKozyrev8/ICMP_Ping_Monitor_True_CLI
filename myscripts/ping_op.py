@@ -2,18 +2,22 @@ import time
 import os
 from myscripts.time_lib import MyTimeMode
 from myscripts.time_lib import MyTime
+from myscripts import database_op
 import sys
+
 
 
 class PingResultError(Exception):
     def __init__(self, ping_result_value):
-        self.ping_result_value = f"Unexpected ping result code was received: {ping_result_value}"
+        self.ping_result_value = "Unexpected ping result code was received: {}".format(ping_result_value)
 
 
 def ping(ip, pinginterval=3):
+    pinginterval = int(pinginterval)
     try:
+        ipaddress, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
         if sys.platform == 'win32':
-            pingresult = os.system(f"ping -n 1 {ip}")
+            pingresult = os.system("ping -n 1 {}".format(ip))
             if pingresult == 0:
                 time.sleep(pinginterval)
                 pingresult = (1, 0)  # successfull attempt
@@ -24,7 +28,7 @@ def ping(ip, pinginterval=3):
             else:
                 raise PingResultError(pingresult)
         elif sys.platform == 'linux':
-            pingresult = os.system(f"ping -c 1 {ip}")
+            pingresult = os.system("ping -c 1 {}".format(ip))
             if pingresult == 0:
                 time.sleep(pinginterval)
                 pingresult = (1, 0)  # successfull attempt
@@ -35,19 +39,21 @@ def ping(ip, pinginterval=3):
             else:
                 raise PingResultError(pingresult)
         else:
-            sys.stderr.write(f"The program is not designed to work in your OS {sys.platform}")
-            sys.stderr.write(f"{ip} session crushed.")
+
+            sys.stderr.write("The program is not designed to work in your OS {}".format(sys.platform))
+            sys.stderr.write("{} {} session crushed.".format(ip, hostname))
             sys.stderr.flush()
             sys.exit()
     except PingResultError as ex:
-        sys.stderr.write(f"{ex.ping_result_value}\n\n")
-        sys.stderr.write(f"{ip} session crushed.")
+        sys.stderr.write("{}\n\n".format(ex.ping_result_value))
+        sys.stderr.write("{} {} session crushed.".format(ip, hostname))
         sys.stderr.flush()
         sys.exit()
 
 
 def write_ping_result_to_file(pingresult, ip):
     '''Is used to write ping results to file, return path to the file'''
+    ipaddress, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
     currentDirectory = os.getcwd()
     folderToSavePingResultsUpper = ip
     folderToSavePingResultsMiddle = "Year_" + str(time.localtime().tm_year) + "Month_"\
@@ -60,23 +66,23 @@ def write_ping_result_to_file(pingresult, ip):
     if not os.path.exists(folderToSavePingResults):  # if the path do not exist then
         os.makedirs(folderToSavePingResults)  # create it now!
     with open(os.path.join(folderToSavePingResults,
-                           f"ping_{str(MyTime(MyTimeMode.middle))}_{ip}.txt"), mode="a") as f:
+                           "ping_{}_{}.txt".format(str(MyTime(MyTimeMode.middle)), ip)), mode="a") as f:
         try:
             if pingresult == (1, 0):
                 f.write(
-                    f"The remote destination {ip} is reachable, everyting is OKAY.{str(MyTime(MyTimeMode.full))} \n")
+                    "The remote destination {} is reachable.{} \n".format(ip, str(MyTime(MyTimeMode.full))))
             elif pingresult == (0, 1):
-                f.write(f"Ping {ip} failed! {str(MyTime(MyTimeMode.full))} \n")
-            elif pingresult == None: # it is so to allow first ping, see pingsubprocess.py file to understand
+                f.write("Ping {} failed! {} \n".format(ip, str(MyTime(MyTimeMode.full))))
+            elif pingresult is None: # it is so to allow first ping, see pingsubprocess.py file to understand
                 pass
             else:
                 raise PingResultError(pingresult)
         except PingResultError as ex:
-            sys.stderr.write(f"{ex.ping_result_value}\n\n")
-            sys.stderr.write(f"{ip} session crushed.")
+            sys.stderr.write("{}\n\n".format(ex.ping_result_value))
+            sys.stderr.write("{} {} session crushed.".format(ip, hostname))
             sys.stderr.flush()
             sys.exit()
-    FilePath = os.path.join(folderToSavePingResults, f"ping_{str(MyTime(MyTimeMode.middle))}_{ip}.txt")
+    FilePath = os.path.join(folderToSavePingResults, "ping_{}_{}.txt".format(str(MyTime(MyTimeMode.middle)), ip))
     return FilePath
 
 
@@ -86,11 +92,11 @@ def write_ping_result_to_file_short_version(event, ip):
         os.makedirs(folder_to_save_ping_results)  # create it now!
     file_name = "Year_" + str(time.localtime().tm_year) + "Month_"\
                                     + str(time.localtime().tm_mon).rjust(2, '0')
-    with open(os.path.join(folder_to_save_ping_results, f"{file_name}.txt"), mode="a") as f:
+    with open(os.path.join(folder_to_save_ping_results, "{}.txt".format(file_name)), mode="a") as f:
         if event:
-            f.write(f"The address {ip} is not reachable! {str(MyTime(MyTimeMode.full))} \n")
+            f.write("The address {} is not reachable! {} \n".format(ip, str(MyTime(MyTimeMode.full))))
         else:
-            f.write(f"The address {ip} is reachable again, {str(MyTime(MyTimeMode.full))} \n")
+            f.write("The address {} is reachable again, {} \n".format(ip, str(MyTime(MyTimeMode.full))))
 
 
 def write_ping_stats_to_file(ip, positivePingsThisHourCounter,
@@ -100,7 +106,7 @@ def write_ping_stats_to_file(ip, positivePingsThisHourCounter,
         with open(previousFilePath, mode="a") as f:
             k = 100 * positivePingsThisHourCounter / (positivePingsThisHourCounter + negativePingsThisHourCounter)
             f.write("\n")
-            f.write(f"{ip}__positivePingAttempts_Number_is__{positivePingsThisHourCounter}\n")
-            f.write(f"{ip}__negativePingAttempts_Number_is__{negativePingsThisHourCounter}\n")
-            f.write(f"{ip}__Percent of_positivePingAttempts__is__{k}\n")
+            f.write("{}__positivePingAttempts_Number_is__{}\n".format(ip, positivePingsThisHourCounter))
+            f.write("{}__negativePingAttempts_Number_is__{}\n".format(ip, negativePingsThisHourCounter))
+            f.write("{}__Percent of_positivePingAttempts__is__{}\n".format(ip, k))
             f.write("\n")

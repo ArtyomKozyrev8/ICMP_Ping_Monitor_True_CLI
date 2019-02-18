@@ -106,36 +106,3 @@ def extract_parameters_of_ip_session_ipsessions_table(ip, db_name=dbname):
         curs.execute('''SELECT * FROM ipsessions WHERE ip = ?''', data_to_extract)
         line = curs.fetchone()
     return line
-
-
-
-
-'''
-x1 = IpSession('1.1.1.1', '100', 'host101')
-x2 = IpSession('200.200.1.1', '10', 'host22')
-x3 = IpSession('220.220.1.2', '14', 'host52')
-x4 = IpSession('101.108.8.9', '14', 'host51')
-
-insert_line_into_ipsessions_table(x1)
-insert_line_into_ipsessions_table(x2)
-insert_line_into_ipsessions_table(x3)
-insert_line_into_ipsessions_table(x4)
-print("________________")
-print(show_lines_into_ipsessions_table())
-print("________________")
-
-iplist = show_lines_into_ipsessions_table()
-del_line_from_ipsessions_table('1.1.1.99', iplist)
-iplist = show_lines_into_ipsessions_table()
-del_line_from_ipsessions_table('1.1.1.1', iplist)
-iplist = show_lines_into_ipsessions_table()
-del_line_from_ipsessions_table('200.200.1.1', iplist)
-iplist = show_lines_into_ipsessions_table()
-del_line_from_ipsessions_table('220.220.1.2', iplist)
-iplist = show_lines_into_ipsessions_table()
-del_line_from_ipsessions_table('101.108.8.9', iplist)
-iplist = show_lines_into_ipsessions_table()
-del_line_from_ipsessions_table('101.108.8.66', iplist)
-
-print(extract_parameters_of_ip_session_ipsessions_table('1.1.1.99'))
-'''

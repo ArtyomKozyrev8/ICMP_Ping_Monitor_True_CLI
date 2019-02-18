@@ -1,6 +1,6 @@
 Dear Team,
 
-We observe that address {0} is not reachable within last 30 seconds. Now {1}.
+We observe that address {0} {1} is not reachable within last 30 seconds. Now {2}.
 
 We ask you to investigate the issue and undertake all necessary steps to solve the problem.
 

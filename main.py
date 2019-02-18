@@ -33,10 +33,9 @@ if __name__ == '__main__':
     if sys.platform == 'win32' or sys.platform == 'linux':
         main()
     else:
-        print(f"The program is not designed to work in your OS {sys.platform}")
+        print("The program is not designed to work in your OS {}".format(sys.platform))
         print("The program will be terminated in 5 seconds, Sorry...")
         time.sleep(5)
         print("Bye")
         time.sleep(1)
         sys.exit()
-        

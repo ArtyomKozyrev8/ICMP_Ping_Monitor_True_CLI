@@ -1,12 +1,23 @@
 from myscripts import cli_menu
+import ipaddress
+from myscripts import database_op
 
 
 def add_ip_to_monitoring_menu(popen_list: dict, command: list) -> None:
-    if len(command) == 3:
-        if cli_menu.is_ip_address(command[1]) and cli_menu.is_digit(command[2]):
-            cli_menu.add_ip_to_monitoring(command[1], command[2], popen_list)
+    if len(command) == 3 or len(command) == 4:
+        try:
+            if len(command) == 3:
+                session = database_op.IpSession(command[1], command[2])
+            else:
+                session = database_op.IpSession(command[1], command[2], command[3])
+            cli_menu.add_ip_to_monitoring(session, popen_list)
+        except ipaddress.AddressValueError:
+            print("You put incorrect ip address {} after add".format(command[1]))
+        except ValueError:
+            print("You put incorrect ping interval {}".format(command[2]))
     else:
         print("You should put ip address after word add then interval in seconds.")
+        print("You can also put hostname after ip address interval.")
         print("Print help and press Enter for more information.\n")
 
 
@@ -21,14 +32,13 @@ def del_ip_from_monitoring_menu(popen_list: dict, command: list) -> None:
 def import_ip_from_ip_file_list_menu(popen_list: dict, command: list) -> None:  #!!!!!!!!
     if len(command) == 1:
         ipexportlist = cli_menu.import_ip_from_file()
-        if len(ipexportlist) > 0 and (ipexportlist != "FileError"):
+        if len(ipexportlist) > 0:
             for ip in ipexportlist:
-                x = ip.split('INTERVAL')
-                cli_menu.add_ip_to_monitoring(x[0], x[1], popen_list)
-        elif ipexportlist == "FileError":
-            pass
+                ip, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
+                session = database_op.IpSession(ip, interval, hostname)
+                cli_menu.add_ip_to_monitoring(session, popen_list)
         else:
-            print("File IPLIST.py contains no IPs, nothing will be added to monitoring.")
+            print("No ips was extracted from database, nothing will be added to monitoring.")
     else:
         print("You should not put any words after import.")
         print("Print help and press Enter for more information.\n")

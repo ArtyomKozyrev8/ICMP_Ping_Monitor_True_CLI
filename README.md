@@ -5,7 +5,7 @@ The program has TRUE CLI, which is similar to CMD or router CLI. The CLI is base
 
 Note that the program can be used only in Windows OS and Unix (tested in Ubuntu 18.04) now, but you can do some changes to try to use it in your OS.
 
-The program need Python3.6 or older.
+The program was tested with Python 3.5 - 3.7 .
 
 To use the program you need to upload all files. To start program start main.py file. 
 

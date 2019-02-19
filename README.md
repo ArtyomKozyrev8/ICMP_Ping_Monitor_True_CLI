@@ -1,11 +1,11 @@
 # ICMP_Ping_Monitor_True_CLI
-The program is created to ping several ip addresses, put results in separate txt files, distribute files between folders, send email if ip is not reachable, send email if ip is reachable again, display reachable|unreachable messages in CLI screen. All action are independent for each ip address. The program has two logging modes - long and short, for detailed ping statistics and for just recording reachable/unreachable events
+The program is created to ping several ip addresses, put results in separate txt files, distribute files between folders, send email if ip is not reachable, send email if ip is reachable again, display reachable|unreachable messages in CLI screen. All action are independent for each ip address. The program has two logging modes - long and short, for detailed ping statistics and for just recording reachable/unreachable events.
 
 The program has TRUE CLI, which is similar to CMD or router CLI. The CLI is based on subprocess.Popen class.
 
 Note that the program can be used only in Windows OS and Unix (tested in Ubuntu 18.04, Debian-9.8.0-amd64-xfce, Debian 8, NAS ASUSTOR AS1002T) now, but you can do some changes to try to use it in your OS.
 
-The program was tested in Python versions 3.4 - 3.7 . The program use SQL LITE 3 database. (distributed with python, you do not need to upload it independently).
+The program was tested in Python versions 3.4 - 3.7 . The program use SQL LITE 3 database (distributed with python, you do not need to upload it independently).
 
 Feel free to ask questions and give remommendations. Feel free to use the code in your projects or to to learn from.
 

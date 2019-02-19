@@ -5,7 +5,7 @@ The program has TRUE CLI, which is similar to CMD or router CLI. The CLI is base
 
 Note that the program can be used only in Windows OS and Unix (tested in Ubuntu 18.04, Debian-9.8.0-amd64-xfce, Debian 8, NAS ASUSTOR AS1002T) now, but you can do some changes to try to use it in your OS.
 
-The program was tested in Python versions 3.4 - 3.7
+The program was tested in Python versions 3.4 - 3.7 . The program use SQL LITE 3 database. (distributed with python, you do not need to upload it independently).
 
 Feel free to ask questions and give remommendations. Feel free to use the code in your projects or to to learn from.
 

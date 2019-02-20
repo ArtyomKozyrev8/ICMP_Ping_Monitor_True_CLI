@@ -13,10 +13,8 @@ If you face any probelms, feel free to apply to me kozirev8@gmail.com , I'll do 
 
 The program is not the final version, I'm going to add new changes in future, new contributors are welcome.
 
-To use the program you need to upload all files. Then just to start program start main.py file by Python3. 
+To use the program you need to upload all files. Then just to start program start main.py file by Python3.
 
 All other files to run program will be automatically created after you did all required steps during first launch of the program.
 
 If it is first launch, do setup and recipients commands. Note that when you start the commands you rewrite data, rather than add any new information to the old one.
-
-

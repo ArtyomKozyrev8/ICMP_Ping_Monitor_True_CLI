@@ -3,6 +3,7 @@ import sys
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+from myscripts import database_op
 from myscripts.time_lib import MyTimeMode
 from myscripts.time_lib import MyTime
 
@@ -11,12 +12,13 @@ def send_negative_mail(ipAddress, email_sender, email_receiver, message_body,
                        email_sender_password, smtp_settings, smtp_port):
     '''The method sends negative mail if ip is not reachable'''
     ipAddress = str(ipAddress)
-    subject = "{} error notification {}".format(ipAddress, str(MyTime(MyTimeMode.full)))
+    ip, interval, hostname  = database_op.extract_parameters_of_ip_session_ipsessions_table(ipAddress)
+    subject = "{} {} error notification {}".format(ip, hostname, str(MyTime(MyTimeMode.full)))
     msg = MIMEMultipart()
     msg['From'] = email_sender
     msg['To'] = ", ".join(email_receiver)
     msg['Subject'] = subject
-    msg.attach(MIMEText(message_body.format(ipAddress, str(MyTime(MyTimeMode.full))), 'plain'))
+    msg.attach(MIMEText(message_body.format(ip, hostname, str(MyTime(MyTimeMode.full))), 'plain'))
     text = msg.as_string()
     try:
         connection = smtplib.SMTP(smtp_settings, smtp_port)  # Attention! This should be settings of you smtp server
@@ -40,12 +42,13 @@ def send_positive_mail(ipAddress, email_sender, email_receiver, message_body,
                        email_sender_password, smtp_settings, smtp_port):
     '''The method sends positive mail if ip is reachable again'''
     ipAddress = str(ipAddress)
-    subject = "{} recovery notification {}".format(ipAddress, str(MyTime(MyTimeMode.full)))
+    ip, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ipAddress)
+    subject = "{} {} recovery notification {}".format(ip, hostname, str(MyTime(MyTimeMode.full)))
     msg = MIMEMultipart()
     msg['From'] = email_sender
     msg['To'] = ", ".join(email_receiver)
     msg['Subject'] = subject
-    msg.attach(MIMEText(message_body.format(ipAddress, str(MyTime(MyTimeMode.full))), 'plain'))
+    msg.attach(MIMEText(message_body.format(ip, hostname, str(MyTime(MyTimeMode.full))), 'plain'))
     text = msg.as_string()
     try:
         connection = smtplib.SMTP(smtp_settings, smtp_port)  # Attention! This should be settings of you smtp server

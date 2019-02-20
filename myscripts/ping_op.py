@@ -2,7 +2,9 @@ import time
 import os
 from myscripts.time_lib import MyTimeMode
 from myscripts.time_lib import MyTime
+from myscripts import database_op
 import sys
+
 
 
 class PingResultError(Exception):
@@ -11,7 +13,9 @@ class PingResultError(Exception):
 
 
 def ping(ip, pinginterval=3):
+    pinginterval = int(pinginterval)
     try:
+        ipaddress, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
         if sys.platform == 'win32':
             pingresult = os.system("ping -n 1 {}".format(ip))
             if pingresult == 0:
@@ -35,19 +39,21 @@ def ping(ip, pinginterval=3):
             else:
                 raise PingResultError(pingresult)
         else:
+
             sys.stderr.write("The program is not designed to work in your OS {}".format(sys.platform))
-            sys.stderr.write("{} session crushed.".format(ip))
+            sys.stderr.write("{} {} session crushed.".format(ip, hostname))
             sys.stderr.flush()
             sys.exit()
     except PingResultError as ex:
         sys.stderr.write("{}\n\n".format(ex.ping_result_value))
-        sys.stderr.write("{} session crushed.".format(ip))
+        sys.stderr.write("{} {} session crushed.".format(ip, hostname))
         sys.stderr.flush()
         sys.exit()
 
 
 def write_ping_result_to_file(pingresult, ip):
     '''Is used to write ping results to file, return path to the file'''
+    ipaddress, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
     currentDirectory = os.getcwd()
     folderToSavePingResultsUpper = ip
     folderToSavePingResultsMiddle = "Year_" + str(time.localtime().tm_year) + "Month_"\
@@ -73,7 +79,7 @@ def write_ping_result_to_file(pingresult, ip):
                 raise PingResultError(pingresult)
         except PingResultError as ex:
             sys.stderr.write("{}\n\n".format(ex.ping_result_value))
-            sys.stderr.write("{} session crushed.".format(ip))
+            sys.stderr.write("{} {} session crushed.".format(ip, hostname))
             sys.stderr.flush()
             sys.exit()
     FilePath = os.path.join(folderToSavePingResults, "ping_{}_{}.txt".format(str(MyTime(MyTimeMode.middle)), ip))

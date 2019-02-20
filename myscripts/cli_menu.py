@@ -2,11 +2,8 @@ import subprocess
 import ipaddress
 import time
 import sys
-import re
 import os
-
-from myscripts import iplist_file_op
-
+from myscripts import database_op
 
 def give_help_menu():
     print()
@@ -17,8 +14,9 @@ def give_help_menu():
     print("        IF YOU USE THE PROGRAM FIRST TIME DO recipients command!\n")
     print("add:    Print add and press Enter to add ip to monitoring.")
     print("        Pings are made within certain interval.")
-    print("        Example: add 1.1.1.1 10")
-    print("        Example: add address interval_in_seconds\n")
+    print("        Example: add 1.1.1.1 10 hostname")
+    print("        Example: add 1.1.1.1 10 ")
+    print("        Example: add address interval_in_seconds hostname_if_needed\n")
     print("del:    Print del and press Enter to remove ip from monitoring.")
     print("        Example: del 1.1.1.1 \n")
     print("show:   Print show and press Enter to see what list of ip is monitored.\n")
@@ -76,7 +74,7 @@ def analyze_command(command: str) -> list:
         if element == "":
             copied_command.remove(element)
     command = copied_command
-    if len(command) > 3 or len(command) == 0: # seconds part!!!!
+    if len(command) > 4 or len(command) == 0: # seconds part!!!!
         command = ["none"]
     return command
 
@@ -95,12 +93,10 @@ def exit_program(ip_in_monitoring_dict: dict) -> None:
 
 def show_ip_in_monitoring(ip_in_monitoring_dict: dict) -> None:
     if not len(ip_in_monitoring_dict) == 0:
-        ip_list_in_file = iplist_file_op.read_ip_from_file()[1]
+        ip_list_in_db = database_op.extract_ips_from_ipsessions_table()
         for ip in ip_in_monitoring_dict.keys():
-            for element in ip_list_in_file:
-                if re.search(string=element, pattern=ip) is not None:
-                    print(" ".join(element.split("INTERVAL")))
-                    break
+            address, interval, host = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
+            print("{} {} {}".format(address, interval, host))
     else:
         print("There is no ip in monitoring now.\n")
 
@@ -125,7 +121,9 @@ def remove_ip_from_monitoring(ip: str, ip_in_monitoring_dict: dict) -> None:
         print("To get help print help then press Enter\n")
 
 
-def add_ip_to_monitoring(ip: str, interval: int, ip_in_monitoring_dict: dict) -> None:
+def add_ip_to_monitoring(session, ip_in_monitoring_dict: dict) -> None:
+    ip = session.ip
+    interval = session.interval
     if is_ip_address(ip):
         if not is_ip_already_in_monitoring(ip, ip_in_monitoring_dict):
             if sys.platform == 'win32':
@@ -142,25 +140,33 @@ def add_ip_to_monitoring(ip: str, interval: int, ip_in_monitoring_dict: dict) ->
                 time.sleep(1)
                 sys.exit()
 
-            print("{} was added to monitoring\n".format(ip))
-            iplist_file_op.write_ip_to_file("{}INTERVAL{}".format(ip, interval))  #!!!!
+            print("{} was added to monitoring".format(ip))
+            database_op.insert_line_into_ipsessions_table(session)
 
 
-def import_ip_from_file() -> set:
-    read_from_file_result = iplist_file_op.read_ip_from_file()
-    continue_import = read_from_file_result[0]
-    ip_list = read_from_file_result[1]
-    if not continue_import:
-        ip_list = "FileError"
+def import_ip_from_file():
+    way = os.path.join(os.getcwd(), "database")
+    if not os.path.exists(way):
+        os.makedirs(way)
+    dbname = os.path.join(way, 'ipsessions.db')
+    do_database_exist = os.path.exists(dbname)
+    if do_database_exist:
+        continue_import = True
+    else:
+        print("The database was not created yet")
+        ip_list = []
         return ip_list
     while continue_import:
-        iplist_file_op.show_ip_in_file(ip_list)
+        ip_list = database_op.show_lines_into_ipsessions_table()
         ip = input("Print ip you would like to remove, otherwise print Enter:\n")
         if ip == "":
             break
         else:
-            ip_list = iplist_file_op.remove_ip_from_file(ip, ip_list)
-            iplist_file_op.show_ip_in_file(ip_list)
+            if ip in ip_list:
+                database_op.del_line_from_ipsessions_table(ip, ip_list)
+                ip_list.remove(ip)
+            else:
+                print("Incorrect ip was chosen was made, please try again.\n")
         while True:
             remove_more_ip = input("Print yes and press Enter to remove more ip, otherwise press Enter:\n")
             if remove_more_ip.upper() == "YES":
@@ -168,7 +174,6 @@ def import_ip_from_file() -> set:
                 break
             elif remove_more_ip == "":
                 continue_import = False
-                iplist_file_op.rewrite_file(ip_list)
                 break
             else:
                 print("Incorrect input was made, please try again.\n")

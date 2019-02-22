@@ -3,6 +3,7 @@ import ipaddress
 import time
 import sys
 import os
+import re
 from myscripts import database_op
 
 def give_help_menu():
@@ -14,12 +15,15 @@ def give_help_menu():
     print("        IF YOU USE THE PROGRAM FIRST TIME DO recipients command!\n")
     print("add:    Print add and press Enter to add ip to monitoring.")
     print("        Pings are made within certain interval.")
+    print("        You may add hostname if you want.")
     print("        Example: add 1.1.1.1 10 hostname")
     print("        Example: add 1.1.1.1 10 ")
     print("        Example: add address interval_in_seconds hostname_if_needed\n")
     print("del:    Print del and press Enter to remove ip from monitoring.")
     print("        Example: del 1.1.1.1 \n")
-    print("show:   Print show and press Enter to see what list of ip is monitored.\n")
+    print("show:   Print show and press Enter to see what list of ip is monitored.")
+    print("show setup:  Provide the program setup information.")
+    print("show recipients:  Provide the information about notification recipients\n")
     print("import: Print read and press Enter to read list of ip from IPLIST.py file.\n")
     print("exit:   Print exit and press Enter to quit the program.\n")
     print("help:   Print help and press Enter to get help menu.\n")
@@ -58,6 +62,21 @@ def is_digit(interval: str) -> bool:
         return False
     else:
         return True
+
+
+def check_email_address(email_string):
+    pattern = "[^ @]+@[^ @]+\.[^ @]+"
+    #email_string = email_string.strip()
+    print(email_string)
+    if len(email_string.split()) > 1:
+        print("Email address should be one word, not several.")
+        return False
+    else:
+        if re.match(pattern=pattern, string=email_string) is not None:
+            return True
+        else:
+            print("Email format is incorrect.")
+            return False
 
 
 def analyze_command(command: str) -> list:
@@ -185,10 +204,10 @@ def setup():
     print('Please give your email box, you gonna send mails from.\nExample: sendmailsfrom@gmail.com')
     while True:
         sender_email = input("Print here: ").strip()
-        if  sender_email != "":
+        if check_email_address(sender_email):
             break
         else:
-            print("Your email box can't be empty value. Try again")
+            print("Email was incorrect. Try again")
     print('Please give your mail box password.\nExample: yourpassword')
     while True:
         email_sender_password = input("Print here: ").strip()
@@ -242,7 +261,7 @@ def make_email_recipient_list():
     while add_recipient:
         print("Please enter emails of recipient you would like to notify")
         email = input("Print here: ").strip()
-        if len(email.split()) == 1:
+        if check_email_address(email):
             email_recipients.append(email)
             print("Do you want to add another recipient?")
             while True:

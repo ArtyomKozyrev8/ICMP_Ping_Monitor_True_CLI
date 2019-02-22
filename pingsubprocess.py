@@ -111,7 +111,7 @@ def notificator(pingFailedLetterWasSent, negativePingsInRow, positivePingsInRow,
 
 
 def main(ip, interval):
-    ipaddress, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
+    ipaddress, interval_, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
     error_mail_message = upload_error_notification_msg()
     recovery_mail_message = upload_recovery_notification_msg()
     if error_mail_message is None or recovery_mail_message is None:

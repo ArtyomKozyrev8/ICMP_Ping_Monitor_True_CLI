@@ -1,5 +1,6 @@
 from myscripts import cli_menu
 import ipaddress
+import os
 from myscripts import database_op
 
 
@@ -48,8 +49,27 @@ def show_ip_in_monitoring_menu(popen_list: dict, command: list) -> None:
     # command is not used here, it is here to simplify method list wrapper
     if len(command) == 1:
         cli_menu.show_ip_in_monitoring(popen_list)
+    elif len(command) == 2:
+        if command[1] == "setup":
+            setup_path = os.path.join(os.getcwd(), "settings", "settings.py")
+            if os.path.exists(setup_path):
+                with open(setup_path, 'r') as f:
+                    text = f.read()
+                print(text)
+            else:
+                print("No settings.py file exists, please make setup command.")
+        elif command[1] == "recipients":
+            recipients_path = os.path.join(os.getcwd(), "settings", "email_recipient_list.py")
+            if os.path.exists(recipients_path):
+                with open(recipients_path, 'r') as f:
+                    text = f.read()
+                print(text)
+            else:
+                print("No email_recipient_list.py exists, please make recipients command.")
+        else:
+            print("You put incorrect parameter after show. Use help command for more details.")
     else:
-        print("You should not put any words after show.")
+        print("The show command can't have more than 1 parameter after show word.")
         print("Print help and press Enter for more information.\n")
 
 

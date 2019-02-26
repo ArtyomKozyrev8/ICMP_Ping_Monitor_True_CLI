@@ -34,13 +34,13 @@ def upload_smtp_settings():
     file_name = os.path.join(os.getcwd(), "settings", "settings.py")
     try:
         ipaddress, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
-        with open(file=file_name , mode="r") as f:
+        with open(file=file_name, mode="r") as f:
             for i in f:
                 settings.append(i.strip("\\\n"))
     except FileNotFoundError:
         sys.stderr.write("Settings file does not exist or corrupted.\n\n")
         sys.stderr.write("Delete the file if it exists and do setup command\n\n")
-        sys.stderr.write("{} {} session crushed. {}\n\n".format(ip, hostname, MyTime(MyTimeMode.full)))
+        sys.stderr.write("{} {} session crushed.\n{}\n\n".format(ip, hostname, MyTime(MyTimeMode.full)))
         sys.stderr.write("To restore session to the ip, add it again!\n")
         sys.stderr.flush()
         sys.exit()
@@ -58,7 +58,7 @@ def upload_recipients_list():
     except FileNotFoundError:
         sys.stderr.write("email_recipient_list.py file does not exist or corrupted.\n\n")
         sys.stderr.write("Delete the file if it exists and do recipients command\n\n")
-        sys.stderr.write("{} {} session crushed. {}\n\n".format(ip, hostname, MyTime(MyTimeMode.full)))
+        sys.stderr.write("{} {} session crushed.\n{}\n\n".format(ip, hostname, MyTime(MyTimeMode.full)))
         sys.stderr.write("To restore session to the ip, add it again!\n")
         sys.stderr.flush()
         sys.exit()
@@ -72,7 +72,7 @@ def notificator(pingFailedLetterWasSent, negativePingsInRow, positivePingsInRow,
     ipaddress, interval, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
     if negativePingsInRow == 4 and not pingFailedLetterWasSent:
         pingFailedLetterWasSent = True
-        sys.stderr.write("{} {} is not reachable. {}\n\n".format(ip, hostname, MyTime(MyTimeMode.full)))
+        sys.stderr.write("{} {} is not reachable.\n{}\n\n".format(ip, hostname, MyTime(MyTimeMode.full)))
         sys.stderr.flush()
 
         if mode == "short":
@@ -91,7 +91,7 @@ def notificator(pingFailedLetterWasSent, negativePingsInRow, positivePingsInRow,
 
     if positivePingsInRow == 10 and pingFailedLetterWasSent:
         pingFailedLetterWasSent = False
-        sys.stderr.write("{} {} is  reachable again now. {}\n\n".format(ip, hostname, MyTime(MyTimeMode.full)))
+        sys.stderr.write("{} {} is  reachable again now.\n{}\n\n".format(ip, hostname, MyTime(MyTimeMode.full)))
         sys.stderr.flush()
 
         if mode == "short":
@@ -111,11 +111,11 @@ def notificator(pingFailedLetterWasSent, negativePingsInRow, positivePingsInRow,
 
 
 def main(ip, interval):
-    ipaddress, interval_, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
+    ipaddress, interval_l, hostname = database_op.extract_parameters_of_ip_session_ipsessions_table(ip)
     error_mail_message = upload_error_notification_msg()
     recovery_mail_message = upload_recovery_notification_msg()
     if error_mail_message is None or recovery_mail_message is None:
-        sys.stderr.write("{} {} session crushed. {}\n".format(ip, hostname, MyTime(MyTimeMode.full)))
+        sys.stderr.write("{} {} session crushed.\n{}\n".format(ip, hostname, MyTime(MyTimeMode.full)))
         sys.stderr.flush()
         sys.exit()
 

@@ -5,8 +5,8 @@ import time
 class MyTimeMode(enum.Enum):
     '''This class is created to be used in instances of MyTime class
      to determine options of __str__ format for that class'''
-    full = "Date: {2}.{1}.{0} Time UTC+3 {3}:{4}:{5}"
-    middle = "date{2}_{1}_{0}_timeUTC3_{3}"
+    full = "Date: {2}.{1}.{0} Time {3}:{4}:{5}"
+    middle = "date{2}_{1}_{0}_time_{3}"
     short = "date{2}_{1}_{0}" # year
 
 
